@@ -1,0 +1,8 @@
+# MacOS specific OS files
+.DS_store
+# dependencies
+/vendor
+# IDE
+/.idea
+# environment
+.env
