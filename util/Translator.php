@@ -4,9 +4,20 @@ namespace util;
 
 class Translator
 {
+	/**
+	 * @var mixed - object that will contain all translations
+	 */
 	private $translations;
+
+	/**
+	 * @var Translator - self instance, needed to implement a singleton
+	 */
 	private static $instance;
 
+	/**
+	 * Translator constructor.
+	 * @throws \Exception
+	 */
 	private function __construct()
 	{
 		// the approach we will take to support multiple languages will be to use translation files

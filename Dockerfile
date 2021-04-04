@@ -5,8 +5,8 @@ FROM php:7.4-cli
 RUN apt-get update
 
 # set working directoty of the container
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
+COPY . /usr/src/not-a-bot
+WORKDIR /usr/src/not-a-bot
 
 # copy composer so we can run the dependencies installation from our environment
 COPY --from=composer /usr/bin/composer /usr/bin/composer

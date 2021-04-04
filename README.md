@@ -14,3 +14,11 @@ Psst... it's not a bot it's a cyborg
 2. execute `docker-compose up -d`
 3. execute `docker exec not-a-bot composer install`
 4. execute `docker exec not-a-bot php ./entrypoint.php`
+
+## Usage
+
+### Stop
+1. execute `docker stop not-a-bot`
+
+### Refresh
+1. execute `docker-compose up -d --build`

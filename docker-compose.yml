@@ -4,5 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    # auto-assign a name to the container
     container_name: not-a-bot
+    # keep the container alive after invoked
     tty: true
