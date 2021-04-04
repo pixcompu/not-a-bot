@@ -28,6 +28,4 @@ Psst... it's not a bot it's a cyborg
 
 ### Example
 
-You can trigger a anime image writting in some channel 'mona china'
-
-![Screen Shot 2021-04-04 at 5 33 33](https://user-images.githubusercontent.com/11744752/113505927-5519dc80-9507-11eb-90b1-bbb83b9e74a4.png)
+![Screen Shot 2021-04-04 at 16 20 49](https://user-images.githubusercontent.com/11744752/113521856-c5ede280-9561-11eb-98a6-55a1e3481ccb.png)
