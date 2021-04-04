@@ -30,7 +30,7 @@ class Bot
 	 */
 	public function execute()
 	{
-		$this->discord->on(Event::READY, \Closure::fromCallable([$this, 'ready']));
+		$this->discord->on('ready', \Closure::fromCallable([$this, 'ready']));
 		$this->discord->run();
 	}
 

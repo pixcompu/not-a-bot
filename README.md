@@ -22,3 +22,9 @@ Psst... it's not a bot it's a cyborg
 
 ### Refresh
 1. execute `docker-compose up -d --build`
+
+### Example
+
+You can trigger a anime image writting in some channel 'mona china'
+
+![Screen Shot 2021-04-04 at 5 33 33](https://user-images.githubusercontent.com/11744752/113505927-5519dc80-9507-11eb-90b1-bbb83b9e74a4.png)
