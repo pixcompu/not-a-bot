@@ -8,3 +8,6 @@ services:
     container_name: not-a-bot
     # keep the container alive after invoked
     tty: true
+    # TODO: find out why the live reloading is not working
+    volumes:
+    - ./:/usr/src/not-a-bot

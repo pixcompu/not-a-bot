@@ -1,5 +1,17 @@
 {
     "setup": {
-        "ready": "Ya estoy listo!"
+        "ready": "¡Listo y escuchando!"
+    },
+    "command": {
+        "general": {
+            "error": {
+                "missing": "¿Seguro que así iba el commando bro?, creo que te trollearon",
+                "empty": "Aqui estoy... ¡pero no soy adivino bro!",
+                "instance": "Ayuda we... me siento raro... dile a mi creador que tu mensaje me dió nauseas"
+            }
+        },
+        "kitten": {
+            "success": "Creo que estás triste, toma un gatito random"
+        }
     }
 }

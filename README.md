@@ -20,7 +20,10 @@ Psst... it's not a bot it's a cyborg
 ### Stop
 1. execute `docker stop not-a-bot`
 
-### Refresh
+### Start
+1. execute `docker-compose up -d`
+
+### Refresh build
 1. execute `docker-compose up -d --build`
 
 ### Example

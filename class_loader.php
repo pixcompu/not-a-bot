@@ -9,7 +9,11 @@
  * @param $className
  */
 spl_autoload_register(function($className){
-	$path = $className . '.php';
-	$path = str_replace('\\', '/', $path);
-	require_once __DIR__ . DIRECTORY_SEPARATOR .  $path;
+	$filename = $className . '.php';
+	$relativePath = str_replace('\\', '/', $filename);
+	$absolutePath = __DIR__ . DIRECTORY_SEPARATOR .  $relativePath;
+	if(!file_exists($absolutePath)){
+		throw new Exception("File not exists at: " . $absolutePath . ' checkout your namespaces on that class and the parent classes of that class');
+	}
+	require_once($absolutePath);
 });
