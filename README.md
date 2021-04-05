@@ -31,4 +31,4 @@ and fire it up again to see the changes reflected on the bot.
 
 ### Example
 
-![Screen Shot 2021-04-04 at 16 20 49](https://user-images.githubusercontent.com/11744752/113521856-c5ede280-9561-11eb-98a6-55a1e3481ccb.png)
+![Screen Shot 2021-04-05 at 1 43 05](https://user-images.githubusercontent.com/11744752/113545714-4d624280-95b0-11eb-9aff-2a8618ec3413.png)

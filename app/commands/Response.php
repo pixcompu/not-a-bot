@@ -46,7 +46,7 @@ class Response extends Command
 				$keyword,
 				$value
 			);
-			$this->message->reply(sprintf(tt('command.response.set'), $this->args[0]));
+			$this->message->reply(sprintf(tt('command.response.set'), $keyword));
 		}
 	}
 }
