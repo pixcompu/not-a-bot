@@ -49,7 +49,7 @@ class Storage
 	{
 		$guild = $this->database->getReference('/guilds/' . $guildId);
 		$guildValue = $guild->getValue();
-		// only initialize the guild if not exists, so we don't end up reseting a guild information on accident
+		// only initialize the guild if not exists, so we don't end up resetting a guild information on accident
 		if(!isset($guildValue)){
 			$guild->set([
 				'id' => $guildId,
@@ -86,6 +86,18 @@ class Storage
 	{
 		return $this->database
 			->getReference('/guilds/' . $guildId . '/responses/' . $keyword)
+			->getSnapshot()
+			->getValue();
+	}
+
+	/**
+	 * Get all the responses stored for the guild
+	 * @param $guildId
+	 */
+	public function getAllResponses($guildId)
+	{
+		return $this->database
+			->getReference('/guilds/' . $guildId . '/responses')
 			->getSnapshot()
 			->getValue();
 	}

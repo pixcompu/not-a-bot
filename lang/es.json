@@ -5,7 +5,7 @@
     "command": {
         "general": {
             "error": {
-                "missing": "¿Seguro que así iba el commando?, creo que te trollearon",
+                "missing": "¿Seguro que así iba el commando? la verdad ni yo sabía que debía hacer eso",
                 "empty": "Aqui estoy... ¡pero no soy adivino!",
                 "instance": "Ayuda we... me siento raro... dile a mi creador que tu mensaje me dió nauseas"
             }
@@ -14,8 +14,9 @@
             "success": "Creo que estás triste, toma un gatito random"
         },
         "response": {
-            "set": "¡Felicidades! a partir de ahora ya no tendrás que escribir tanto, recordaré %s",
-            "missing": "Hmmm.. no se de que me hablas, no recuerdo esa palabra"
+            "set": "¡Felicidades! a partir de ahora ya no tendrás que escribir tanto, recordaré '%s' por tí",
+            "missing": "Hmmm... no recuerdo esa palabra",
+            "list": "Supongo que quieres ver todas las respuestas que tengo memorizadas, aqui están"
         }
     }
 }
