@@ -5,7 +5,7 @@
     "command": {
         "general": {
             "error": {
-                "missing": "¿Seguro que así iba el commando bro?, creo que te trollearon",
+                "missing": "¿Seguro que así iba el commando?, creo que te trollearon",
                 "empty": "Aqui estoy... ¡pero no soy adivino!",
                 "instance": "Ayuda we... me siento raro... dile a mi creador que tu mensaje me dió nauseas"
             }

@@ -12,7 +12,7 @@ class Translator
 	/**
 	 * @var Translator - self instance, needed to implement a singleton
 	 */
-	private static $instance;
+	private static Translator $instance;
 
 	/**
 	 * Translator constructor.

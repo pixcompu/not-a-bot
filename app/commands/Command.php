@@ -1,27 +1,35 @@
 <?php
 
 namespace app\commands;
+use Discord\Discord;
 use Discord\Parts\Channel\Message;
 
 abstract class Command
 {
 	/**
+	 * @var Discord
+	 */
+	protected Discord $discord;
+
+	/**
 	 * @var Message - the message that triggered this command
 	 */
-	protected $message;
+	protected Message $message;
 
 	/**
 	 * @var array - the array of additional arguments passed with the command
 	 */
-	protected $args;
+	protected array $args;
 
 	/**
 	 * Command constructor.
-	 * @param $args
+	 * @param Discord $discord
 	 * @param Message $message
+	 * @param $args
 	 */
-	public function __construct($args, Message $message)
+	public function __construct(Discord $discord, Message $message, $args)
 	{
+		$this->discord = $discord;
 		$this->message = $message;
 		$this->args = $args;
 	}

@@ -11,7 +11,7 @@ class Bot
 	/**
 	 * @var Discord - main object to interact with discord API
 	 */
-	private $discord;
+	private Discord $discord;
 
 	/**
 	 * @var array[]
@@ -99,8 +99,9 @@ class Bot
 					try{
 						$class = new ReflectionClass($command['namespace'] . '\\' . $command['class']);
 						$instance = $class->newInstanceArgs([
-							$commandPieces,
-							$message
+							$this->discord,
+							$message,
+							$commandPieces
 						]);
 						$instance->execute();
 					} catch(\Throwable $ex){
@@ -120,7 +121,7 @@ class Bot
 	 * @param $requestedCommandKeyword
 	 * @return array|null
 	 */
-	private function getCommandByKeyword($requestedCommandKeyword)
+	private function getCommandByKeyword($requestedCommandKeyword): ?array
 	{
 		foreach ($this->commands as $command){
 			foreach ($command['keywords'] as $keyword){
