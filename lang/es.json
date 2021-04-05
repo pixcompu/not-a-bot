@@ -12,6 +12,10 @@
         },
         "kitten": {
             "success": "Creo que estás triste, toma un gatito random"
+        },
+        "response": {
+            "set": "¡Felicidades! a partir de ahora ya no tendrás que escribir tanto, recordaré %s",
+            "missing": "Hmmm.. no se de que me hablas, no recuerdo esa palabra"
         }
     }
 }

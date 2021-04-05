@@ -3,8 +3,10 @@
 namespace app;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
+use Discord\Parts\Guild\Guild;
 use Discord\WebSockets\Event;
 use ReflectionClass;
+use util\Storage;
 
 class Bot
 {
@@ -22,6 +24,12 @@ class Bot
 			'class' => 'Meow',
 			'namespace' => '\\app\\commands',
 			'keywords' => ['kitten', 'cat', 'miau', 'meow']
+		],
+		[
+			'name' => 'Response',
+			'class' => 'Response',
+			'namespace' => '\\app\\commands',
+			'keywords' => ['response', 're']
 		]
 	];
 
@@ -42,7 +50,7 @@ class Bot
 		$occurrenceByKeyword = array_count_values($allKeywords);
 		$keywordsWithMultipleOccurrences = array_keys(array_diff($occurrenceByKeyword, [1]));
 		if(count($keywordsWithMultipleOccurrences) > 0){
-			throw new \Exception('Two commands cant share the same keyword, repeated keywords found: ' . implode($keywordsWithMultipleOccurrences));
+			throw new \Exception('Two commands cant share the same keyword, repeated keywords found: ' . implode(',', $keywordsWithMultipleOccurrences));
 		}
 	}
 
@@ -71,6 +79,10 @@ class Bot
 	{
 		$this->discord->on(Event::MESSAGE_CREATE, function (Message $message) {
 			$this->analyze($message);
+		});
+
+		$this->discord->on(Event::GUILD_CREATE, function (Guild $guild){
+			Storage::getInstance()->setGuild($guild->id, $guild->name);
 		});
 	}
 
@@ -115,6 +127,15 @@ class Bot
 				$message->reply(tt('command.general.error.empty'));
 			}
 		}
+	}
+
+	/**
+	 * Make sure the discord listener isn't alive when stopping the entrypoint process
+	 * otherwise multiple listeners will be alive and the bot will reply to ever message multiple times
+	 */
+	public function __destruct()
+	{
+		$this->discord->close();
 	}
 
 	/**

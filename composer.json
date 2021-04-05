@@ -2,6 +2,7 @@
     "require": {
         "vlucas/phpdotenv": "^5.3",
         "team-reflex/discord-php": "^5.1",
-        "guzzlehttp/guzzle": "^7.3"
+        "guzzlehttp/guzzle": "^7.3",
+        "kreait/firebase-php": "^5.17"
     }
 }

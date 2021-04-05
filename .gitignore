@@ -4,5 +4,7 @@
 /vendor
 # IDE
 /.idea
+# files with private configuration of google
+firebase.json
 # environment
 .env
