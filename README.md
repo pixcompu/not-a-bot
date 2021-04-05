@@ -17,6 +17,9 @@ Psst... it's not a bot it's a cyborg
 
 ## Usage
 
+Note: Once the container is up, if you make changes to the code, you have to interrupt the `entrypoint.php` process
+and fire it up again to see the changes reflected on the bot.
+
 ### Stop
 1. execute `docker stop not-a-bot`
 

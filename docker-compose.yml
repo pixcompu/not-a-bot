@@ -8,6 +8,7 @@ services:
     container_name: not-a-bot
     # keep the container alive after invoked
     tty: true
-    # TODO: find out why the live reloading is not working
+    # for some reason you can't see the changed php code without running again the entrypoint.php, for now that's enough for me..
+    # much quicker than having to destroy and reconstruct the image/container every time i change something
     volumes:
-    - ./:/usr/src/not-a-bot
+    - .:/usr/src/not-a-bot
