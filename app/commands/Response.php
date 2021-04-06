@@ -10,12 +10,15 @@ class Response extends Command
 {
 	public function execute(): void
 	{
+		// the message only have the reference to the channel, but with the channel we can get the guild
+		$channel = $this->discord->getChannel($this->message->channel_id);
+
 		$args = $this->args;
 		$storage = Storage::getInstance();
 		// we could use the same command to save and retrieve custom bot messages
 		if(empty($this->args)) {
 			// show all responses saved
-			$responses = $storage->getAllResponses($this->message->author->guild->id) ?? [];
+			$responses = $storage->getAllResponses($channel->guild_id) ?? [];
 			$reply = tt('command.response.list') . ':' . PHP_EOL;
 			foreach($responses as $keyword => $response){
 				$reply .= $keyword . PHP_EOL;
@@ -25,7 +28,7 @@ class Response extends Command
 			$keyword = array_shift($args);
 			// get a custom response in particular
 			$response = $storage->getResponse(
-				$this->message->author->guild->id,
+				$channel->guild_id,
 				$keyword
 			);
 			// we could have 2 outcomes
@@ -42,7 +45,7 @@ class Response extends Command
 			// set a new custom response for a specific keyword
 			// if the keyword was defined previously it will be overwritten, so be careful
 			$storage->setResponse(
-				$this->message->author->guild->id,
+				$channel->guild_id,
 				$keyword,
 				$value
 			);

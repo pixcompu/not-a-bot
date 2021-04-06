@@ -94,8 +94,8 @@ class Bot
 	private function analyze(Message $message)
 	{
 		// message was from the same bot, ignore, if the bot answers with a message that could trigger the bot again
-		// we could end in a infinite loop, we will allow to process messages from other bots though
-		if($message->author->user->id === $this->discord->user->id) return;
+		// we could end in a infinite loop
+		if(isset($message->author->user->bot) && $message->author->user->bot) return;
 
 		// determine if this intended to be direct call to the bot
 		// we will only consider that is a intended bot call if the preffix is the first caracter of the message
@@ -135,7 +135,9 @@ class Bot
 	 */
 	public function __destruct()
 	{
-		$this->discord->close();
+		if(isset($this->discord)){
+			$this->discord->close();
+		}
 	}
 
 	/**
