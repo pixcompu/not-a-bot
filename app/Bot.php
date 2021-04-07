@@ -18,27 +18,19 @@ class Bot
 	/**
 	 * @var array[]
 	 */
-	private array $commands = [
-		[
-			'name' => 'Random Cat',
-			'class' => 'Meow',
-			'namespace' => '\\app\\commands',
-			'keywords' => ['kitten', 'cat', 'miau', 'meow']
-		],
-		[
-			'name' => 'Response',
-			'class' => 'Response',
-			'namespace' => '\\app\\commands',
-			'keywords' => ['response', 're']
-		]
-	];
+	private array $commands;
 
 	/**
 	 * Bot constructor.
 	 * @throws \Discord\Exceptions\IntentException
+	 * @throws \Exception
 	 */
 	public function __construct()
 	{
+		// parse commands from stand alone file, we will configure the commands in their own separate file so we can access them
+		// from all places where we want them
+		$this->commands = require(__DIR__ . '/commands.php');
+
 		// initialize discord bot, we only need to provider our secret token
 		$options = [
 			'token' => $_ENV['BOT_TOKEN'],

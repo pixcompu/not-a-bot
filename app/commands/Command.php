@@ -39,4 +39,43 @@ abstract class Command
 	 * @return mixed
 	 */
 	public abstract function execute() : void;
+
+	/**
+	 * Return a bold formatted text
+	 * @param $text
+	 * @return string
+	 */
+	protected function bold($text)
+	{
+		return '**' . $text . '**';
+	}
+
+	/**
+	 * Return a italic formatted text
+	 * @param $text
+	 * @return string
+	 */
+	protected function italic($text)
+	{
+		return '_' . $text . '_';
+	}
+
+	/**
+	 * Return a underlined text
+	 * @param $text
+	 * @return string
+	 */
+	protected function underline($text)
+	{
+		return '__' . $text . '__';
+	}
+
+	/**
+	 * Return a code like text
+	 * @param $text
+	 */
+	protected function code($text)
+	{
+		return '`' . $text . '`';
+	}
 }

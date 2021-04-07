@@ -34,7 +34,7 @@ class Response extends Command
 			// we could have 2 outcomes
 			// the response is set and can be returned
 			if(isset($response)){
-				$this->message->reply($response['value']);
+				$this->message->channel->sendMessage($response['value']);
 			} else {
 				// we didn't find a response for this keyword
 				$this->message->reply(tt('command.response.missing'));
