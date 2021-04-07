@@ -12,29 +12,29 @@
         },
         "kitten": {
             "name": "Gatitos",
-            "description": "Obten la imagen de un gatito aleatorio para esos días largos",
+            "description": "Muestra la imagen de un gatito aleatorio para esos días largos",
             "usage": "sin argumentos para obtener la imagen de un gatito",
             "success": "Creo que estás triste, toma un gatito random"
         },
         "response": {
             "name": "Respuestas",
             "description": "Asocia un texto o link a un alias para que no te canses de escribir",
-            "usage": "<alias> <texto> para agregar, <alias> para obtener una respuesta guardada, Sin argumentos para listar todas las respuestas guardadas",
+            "usage": "<alias> <texto> para asociar un texto/link a un alias, <alias> para obtener el texto/link asociado al alias, Sin argumentos para mostrar todas las respuestas guardadas",
             "set": "¡Felicidades! a partir de ahora ya no tendrás que escribir tanto, recordaré '%s' por tí",
             "missing": "Hmmm... no recuerdo esa palabra",
             "list": "Supongo que quieres ver todas las respuestas que tengo memorizadas, aqui están"
         },
         "gif": {
             "name": "Gif",
-            "description": "Obten un gif aleatorio de Giphy para cuando no sabes que decir",
+            "description": "Muestra un gif aleatorio de Giphy para cuando no sabes que decir",
             "usage": "<texto> para obtener un gif aleatorio relacionado al texto",
             "empty": "Parece que nadie comparte tus gustos en gifs carnal"
         },
         "help": {
             "name": "Ayuda",
             "description": "Muestra todos los comandos disponibles",
-            "usage": "Sin argumentos para obtener una descripcion de todos los comandos disponibles",
-            "start": "Esto es todo lo que se hacer",
+            "usage": "Sin argumentos para obtener una descripción de todos los comandos disponibles",
+            "start": "Esto es todo lo que sé hacer",
             "keywords_start": "Lo puedes invocar de las siguientes formas",
             "usage_start": "Usos"
         }

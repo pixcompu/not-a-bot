@@ -21,7 +21,7 @@ class Response extends Command
 			$responses = $storage->getAllResponses($channel->guild_id) ?? [];
 			$reply = tt('command.response.list') . ':' . PHP_EOL;
 			foreach($responses as $keyword => $response){
-				$reply .= $keyword . PHP_EOL;
+				$reply .= '- ' . $this->bold($keyword) . PHP_EOL;
 			}
 			$this->message->reply($reply);
 		} elseif (count($this->args) === 1) {

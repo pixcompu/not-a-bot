@@ -73,6 +73,7 @@ abstract class Command
 	/**
 	 * Return a code like text
 	 * @param $text
+	 * @return string
 	 */
 	protected function code($text)
 	{
