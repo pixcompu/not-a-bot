@@ -13,7 +13,7 @@ class Bot
 	/**
 	 * @var Discord - main object to interact with discord API
 	 */
-	private Discord $discord;
+	private Discord $botDiscord;
 
 	/**
 	 * @var array[]
@@ -35,7 +35,7 @@ class Bot
 		$options = [
 			'token' => $_ENV['BOT_TOKEN'],
 		];
-		$this->discord = new Discord($options);
+		$this->botDiscord = new Discord($options);
 
 		// validate that our list of commands doesn't have collisions
 		$allKeywords = array_merge(...array_column($this->commands, 'keywords'));
@@ -51,8 +51,8 @@ class Bot
 	 */
 	public function execute()
 	{
-		$this->discord->on('ready', \Closure::fromCallable([$this, 'ready']));
-		$this->discord->run();
+		$this->botDiscord->on('ready', \Closure::fromCallable([$this, 'ready']));
+		$this->botDiscord->run();
 	}
 
 	/**
@@ -69,11 +69,11 @@ class Bot
 	 */
 	private function listen()
 	{
-		$this->discord->on(Event::MESSAGE_CREATE, function (Message $message) {
-			$this->analyze($message);
+		$this->botDiscord->on(Event::MESSAGE_CREATE, function (Message $message, Discord $userDiscord) {
+			$this->analyze($message, $userDiscord);
 		});
 
-		$this->discord->on(Event::GUILD_CREATE, function (Guild $guild){
+		$this->botDiscord->on(Event::GUILD_CREATE, function (Guild $guild){
 			Storage::getInstance()->setGuild($guild->id, $guild->name);
 		});
 	}
@@ -81,9 +81,10 @@ class Bot
 	/**
 	 * analyze the message to see if it should trigger a command
 	 * @param Message $message
+	 * @param Discord $userDiscord
 	 * @throws \Exception
 	 */
-	private function analyze(Message $message)
+	private function analyze(Message $message, Discord $userDiscord)
 	{
 		// message was from the same bot, ignore, if the bot answers with a message that could trigger the bot again
 		// we could end in a infinite loop
@@ -103,7 +104,7 @@ class Bot
 					try{
 						$class = new ReflectionClass($command['namespace'] . '\\' . $command['class']);
 						$instance = $class->newInstanceArgs([
-							$this->discord,
+							$userDiscord,
 							$message,
 							$commandPieces
 						]);
@@ -127,8 +128,8 @@ class Bot
 	 */
 	public function __destruct()
 	{
-		if(isset($this->discord)){
-			$this->discord->close();
+		if(isset($this->botDiscord)){
+			$this->botDiscord->close();
 		}
 	}
 

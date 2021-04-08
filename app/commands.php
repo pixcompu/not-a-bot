@@ -31,5 +31,13 @@ return [
 		'namespace' => '\\app\\commands',
 		'usage' => tt('command.help.usage'),
 		'keywords' => ['help', 'man']
+	],
+	[
+		'name' => tt('command.music.name'),
+		'class' => 'Music',
+		'description' => tt('command.music.description'),
+		'namespace' => '\\app\\commands',
+		'usage' => tt('command.music.usage'),
+		'keywords' => ['music']
 	]
 ];
