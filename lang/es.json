@@ -41,7 +41,7 @@
         "music": {
             "name": "Musica",
             "description": "Reproduce rolas en el canal de voz que este el usuario",
-            "usage": "Sin argumentos para reproducir un archivo de musica predeterminado (WIP)",
+            "usage": "Sin argumentos para reproducir un archivo de musica predeterminado o detenerlo si ya esta reproduciendo",
             "invalid_channel": "No quiero ir al canal de voz yo solo, ¡me da miedo! primero ve tú",
             "player_start": "Un momento, estoy buscando mis audífonos, estoy seguro que están por aquí",
             "player_start_error": "Whoops ¡Creo que se rompió mi micrófono! dile a mi creador que me compre uno",
