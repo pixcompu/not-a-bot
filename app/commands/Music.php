@@ -2,6 +2,8 @@
 
 
 namespace app\commands;
+use Discord\Parts\Channel\Channel;
+use Discord\Parts\Guild\Guild;
 use Discord\Voice\VoiceClient;
 
 class Music extends Command
@@ -14,43 +16,34 @@ class Music extends Command
 	public function execute(): void
 	{
 		// get the guild where the bot was called from the db
-		$guild = $this->message->author->guild;
+		$guild = $this->message->channel->guild;
 
-		// attempt to get the voice client that is playing currently in the voice channel
-		// a voice client should exists if the bot is currently connected to a voice channel
-		$voiceClient = $this->discord->getVoiceClient($this->message->author->guild_id);
+		// the guild can have
+		$this->discord->guilds->fresh($guild)->then(function(Guild $guild){
+			// attempt to get the voice client that is playing currently in the voice channel
+			// a voice client should exists if the bot is currently connected to a voice channel
+			$voiceClient = $this->discord->getVoiceClient($this->message->channel->guild_id);
 
-		// as a test we will just finish the current voice client if we got requested the music command while the music is playing
-		if(isset($voiceClient)){
-			$voiceClient->close();
-		} else {
-			// to find the voice channel the user is connected
-			// we need to find all the voice states from the guils (voice states are combinations of voice channels and users)
-			$voiceStates = $guild->voice_states;
+			// as a test we will just finish the current voice client if we got requested the music command while the music is playing
+			if(isset($voiceClient)){
+				$voiceClient->close();
+			} else {
+				// to find the voice channel the user is connected
+				// we need to find all the voice states from the guils (voice states are combinations of voice channels and users)
+				$firstVoiceChannel = $guild->channels->get('type', Channel::TYPE_VOICE);
 
-			// once we have the voice states we need to find the voice state the user is related to
-			// a user only can be on a single voice channel at the same time
-			$channel = null;
-			foreach ($voiceStates as $voiceState)
-			{
-				// found the user who send the command, then this channel must be the voice channel the user
-				if($voiceState->user_id === $this->message->user_id){
-					$channel = $this->discord->getChannel($voiceState->channel_id);
-					break;
+				// if we found successfully the channel then we attempt to join the voice channel
+				if (isset($firstVoiceChannel)) {
+					$this->discord->joinVoiceChannel($firstVoiceChannel)->then(function(VoiceClient $voiceClient){
+						$this->message->reply(tt('command.music.player_start'));
+						$this->play($voiceClient);
+					});
+					// the user that triggered the command isn't on a voice channel
+				} else {
+					$this->message->reply(tt('command.music.invalid_channel'));
 				}
 			}
-
-			// if we found successfully the channel then we attempt to join the voice channel
-			if (isset($channel)) {
-				$this->discord->joinVoiceChannel($channel)->then(function(VoiceClient $voiceClient){
-					$this->message->reply(tt('command.music.player_start'));
-					$this->play($voiceClient);
-				});
-				// the user that triggered the command isn't on a voice channel
-			} else {
-				$this->message->reply(tt('command.music.invalid_channel'));
-			}
-		}
+		});
 	}
 
 	/**
