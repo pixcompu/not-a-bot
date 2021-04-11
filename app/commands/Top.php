@@ -31,6 +31,8 @@ class Top extends Command
 			$limit = intval($this->args[0]);
 		}
 
+		// this potentially is a long operation, so we will make the bot appear like it's typing
+		$this->message->channel->broadcastTyping();
 		// get the guild where the bot was called from the db
 		$this->retrieveFullMessageHistory($this->message, function()use ($limit){
 			$this->showTopMessages($limit);
