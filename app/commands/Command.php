@@ -9,7 +9,12 @@ abstract class Command
 	/**
 	 * @var Discord
 	 */
-	protected Discord $discord;
+	protected Discord $botDiscord;
+
+	/**
+	 * @var Discord
+	 */
+	protected Discord $messageDiscord;
 
 	/**
 	 * @var Message - the message that triggered this command
@@ -23,13 +28,15 @@ abstract class Command
 
 	/**
 	 * Command constructor.
-	 * @param Discord $discord
+	 * @param Discord $messageDiscord
+	 * @param Discord $botDiscord
 	 * @param Message $message
 	 * @param $args
 	 */
-	public function __construct(Discord $discord, Message $message, $args)
+	public function __construct(Discord $messageDiscord, Discord $botDiscord, Message $message, $args)
 	{
-		$this->discord = $discord;
+		$this->messageDiscord = $messageDiscord;
+		$this->botDiscord = $botDiscord;
 		$this->message = $message;
 		$this->args = $args;
 	}

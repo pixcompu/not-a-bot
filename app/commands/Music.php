@@ -19,10 +19,10 @@ class Music extends Command
 		$guild = $this->message->channel->guild;
 
 		// the guild can have
-		$this->discord->guilds->fresh($guild)->then(function(Guild $guild){
+		$this->messageDiscord->guilds->fresh($guild)->then(function(Guild $guild){
 			// attempt to get the voice client that is playing currently in the voice channel
 			// a voice client should exists if the bot is currently connected to a voice channel
-			$voiceClient = $this->discord->getVoiceClient($this->message->channel->guild_id);
+			$voiceClient = $this->messageDiscord->getVoiceClient($this->message->channel->guild_id);
 
 			// as a test we will just finish the current voice client if we got requested the music command while the music is playing
 			if(isset($voiceClient)){
@@ -34,7 +34,7 @@ class Music extends Command
 
 				// if we found successfully the channel then we attempt to join the voice channel
 				if (isset($firstVoiceChannel)) {
-					$this->discord->joinVoiceChannel($firstVoiceChannel)->then(function(VoiceClient $voiceClient){
+					$this->messageDiscord->joinVoiceChannel($firstVoiceChannel)->then(function(VoiceClient $voiceClient){
 						$this->message->reply(tt('command.music.player_start'));
 						$this->play($voiceClient);
 					});

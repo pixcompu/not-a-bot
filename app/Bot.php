@@ -105,6 +105,7 @@ class Bot
 						$class = new ReflectionClass($command['namespace'] . '\\' . $command['class']);
 						$instance = $class->newInstanceArgs([
 							$userDiscord,
+							$this->botDiscord,
 							$message,
 							$commandPieces
 						]);

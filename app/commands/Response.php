@@ -11,7 +11,7 @@ class Response extends Command
 	public function execute(): void
 	{
 		// the message only have the reference to the channel, but with the channel we can get the guild
-		$channel = $this->discord->getChannel($this->message->channel_id);
+		$channel = $this->messageDiscord->getChannel($this->message->channel_id);
 
 		$args = $this->args;
 		$storage = Storage::getInstance();

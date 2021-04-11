@@ -47,6 +47,15 @@
             "player_start_error": "Whoops ¡Creo que se rompió mi micrófono! dile a mi creador que me compre uno",
             "player_end": "Creo que ya se terminó el concierto, no firmo autógrafos, lo siento",
             "player_end_error": "Creo que ya se terminó el concierto, no firmo autógrafos, lo siento"
+        },
+        "top": {
+            "name": "Top",
+            "description": "Muestra que mensajes son los que más se repiten en el canal",
+            "usage": "<cantidad> para obtener esa cantidad de comandos más usados, Sin argumentos para obtener los 5 mensajes más usados",
+            "start": "Esto es lo que más repitieron en los últimos 100 mensajes, me da flojera revisar todo el historial",
+            "item_times": "veces",
+            "item_by": "última vez por",
+            "end_empty": "Parece que no repiten ningún mensaje, debe estar muy interesante la conversación aquí."
         }
     }
 }

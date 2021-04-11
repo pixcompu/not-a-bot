@@ -39,5 +39,13 @@ return [
 		'namespace' => '\\app\\commands',
 		'usage' => tt('command.music.usage'),
 		'keywords' => ['music']
+	],
+	[
+		'name' => tt('command.top.name'),
+		'class' => 'Top',
+		'description' => tt('command.top.description'),
+		'namespace' => '\\app\\commands',
+		'usage' => tt('command.top.usage'),
+		'keywords' => ['top']
 	]
 ];
