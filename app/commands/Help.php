@@ -2,7 +2,7 @@
 
 
 namespace app\commands;
-
+use util\Text;
 
 class Help extends Command
 {
@@ -25,12 +25,12 @@ class Help extends Command
 		// for each command we want to show their name, description, ways to call it and the arguments that can receive
 		foreach ($commands as $command) {
 			// name and description of the command
-			$helpLines[] = $this->underline($this->bold($command['name'] . ' (' . $command['description'] . ')'));
+			$helpLines[] = Text::underline(Text::bold($command['name'] . ' (' . $command['description'] . ')'));
 
 			// ways to call this command (aka command aliases)
 			$helpLines[] = tt('command.help.keywords_start') . ':';
 			foreach ($command['keywords'] as $keyword){
-				$helpLines[] = '- ' . $_ENV['COMMAND_PREFIX'] . $this->italic($keyword);
+				$helpLines[] = '- ' . $_ENV['COMMAND_PREFIX'] . Text::italic($keyword);
 			}
 
 			// for the arguments we will take the first of the possible ways to call the command
@@ -41,7 +41,7 @@ class Help extends Command
 			// doing a split by the comma
 			$usages = explode(',', $command['usage']);
 			foreach ($usages as $usage) {
-				$helpLines[] = $this->code($sampleKeyword . ' ' . trim($usage));
+				$helpLines[] = Text::code($sampleKeyword . ' ' . trim($usage));
 			}
 
 			// this is to add a breakline at the end of each command

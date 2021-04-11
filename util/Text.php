@@ -4,6 +4,47 @@ namespace util;
 
 class Text
 {
+
+	/**
+	 * Return a bold formatted text
+	 * @param $text
+	 * @return string
+	 */
+	public static function bold($text)
+	{
+		return '**' . $text . '**';
+	}
+
+	/**
+	 * Return a italic formatted text
+	 * @param $text
+	 * @return string
+	 */
+	public static function italic($text)
+	{
+		return '_' . $text . '_';
+	}
+
+	/**
+	 * Return a underlined text
+	 * @param $text
+	 * @return string
+	 */
+	public static function underline($text)
+	{
+		return '__' . $text . '__';
+	}
+
+	/**
+	 * Return a code like text
+	 * @param $text
+	 * @return string
+	 */
+	public static function code($text)
+	{
+		return '`' . $text . '`';
+	}
+
 	/**
 	 * removes special characters from strings
 	 * @param $string

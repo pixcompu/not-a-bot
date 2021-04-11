@@ -18,7 +18,20 @@ class Top extends Command
 	 * we don't want to get a infinite load of messages, so we set a sanity check on the limit of messages
 	 * @var int
 	 */
-	private int $max = 5000;
+	private int $maxNumberOfMessagesToRetrieve = 3000;
+
+	/**
+	 * measures if the process is finished so the bot appears as typing
+	 * @var bool
+	 */
+	private bool $commandIsInProgress = false;
+
+	/**
+	 * sanity check to the max times we want to call the broadcast typing function to avoid an infinite loop
+	 * if something goes wrong
+	 * @var int
+	 */
+	private int $broadcastTypingRetriesRemaining = 10;
 
 	/**
 	 * gives the most sent messages in a channel (based on the last 100 messages)
@@ -27,17 +40,26 @@ class Top extends Command
 	public function execute(): void
 	{
 		$limit = 5;
-		if(isset($this->args[0]) && is_numeric($this->args[0])){
-			$limit = intval($this->args[0]);
+		// only allow up to 20 places
+		if(isset($this->args[0])){
+			if(is_numeric($this->args[0]) && in_array($this->args[0], range(1, 20))){
+				$limit = intval($this->args[0]);
+			} else {
+				$this->message->reply(tt('command.top.wrong_limit'));
+				return;
+			}
 		}
 
 		// this potentially is a long operation, so we will make the bot appear like it's typing
-		$this->message->channel->broadcastTyping();
+		$this->notifyTyping();
+
 		// get the guild where the bot was called from the db
 		$this->retrieveFullMessageHistory($this->message, function()use ($limit){
 			$this->showTopMessages($limit);
+			$this->commandIsInProgress = false;
 		}, function(){
 			$this->message->reply(tt('command.top.error'));
+			$this->commandIsInProgress = false;
 		});
 	}
 
@@ -83,32 +105,18 @@ class Top extends Command
 			return $b['count'] - $a['count'];
 		});
 
-		// process each message in the count relation
-		$lines = [];
-		$lines[] = $this->bold(sprintf(tt('command.top.start'), count($this->allMessages)) . ':');
-		// calculate if the actual results are less than the limit requested, then return only as much results as we can calculate
-		// otherwise return the same number of elements the limit is requesting
-		$min = min($limit, count($messageCounts));
-		for($i = 0; $i < $min; $i++){
-			$messageCount = $messageCounts[$i];
-			// get the last message that repeated this text
-			$last = $messageCount['messages'][count($messageCount['messages']) - 1];
-
-			$lines[] = sprintf('> %s (%d %s, %s %s)',
-				$this->code($last->content),
-				$messageCount['count'],
-				tt('command.top.item_times'),
-				tt('command.top.item_by'),
-				$this->bold($last->author->username)
-			);
-		}
+		// get the information of the most popular messages in form of a block of text
+		$formattedResponse = $this->getPopularMessagesResponse($messageCounts, $limit);
 
 		// if we found at least one top command output all
-		if (count($lines) > 1) {
-			$response = array_reduce($lines, function ($text, $line) {
-				return $text . $line . PHP_EOL;
-			}, '');
-			$this->message->channel->sendMessage($response);
+		if (count($messageCounts) > 1) {
+			$this->message->channel->sendMessage($formattedResponse)->otherwise(function() use($messageCounts, $limit){
+				// if we found that the top commands response is too long (make the request fail)
+				// we try again but enforcing and truncating the responses
+				$safeFormattedResponse = $this->getPopularMessagesResponse($messageCounts, $limit, true);
+				$this->message->channel->sendMessage(tt('command.top.text_long'));
+				$this->message->channel->sendMessage($safeFormattedResponse);
+			});
 		} else {
 			// otherwise reply
 			$this->message->reply(tt('command.top.end_empty'));
@@ -140,11 +148,78 @@ class Top extends Command
 
 			$this->allMessages = array_merge($rawMessages, $this->allMessages);
 			// we either reached the end of the channel or reached our max limit of messages we want to retrieve
-			if(count($rawMessages) < 100 || count($this->allMessages) >= $this->max){
+			if(count($rawMessages) < 100 || count($this->allMessages) >= $this->maxNumberOfMessagesToRetrieve){
 				call_user_func($onDone);
 			} else {
 				$this->retrieveFullMessageHistory($rawMessages[0], $onDone, $onFail);
 			}
 		}, $onFail);
+	}
+
+	/**
+	 * notifies to the channel that the bot is typing
+	 */
+	private function notifyTyping()
+	{
+		$this->message->channel->broadcastTyping()->then(function(){
+			if($this->commandIsInProgress && $this->broadcastTypingRetriesRemaining > 0){
+				$this->broadcastTypingRetriesRemaining--;
+				$this->notifyTyping();
+			}
+		});
+	}
+
+	/**
+	 * get the information of the most popular messages in form of a block of text
+	 * @param array $messageCounts - objects in the form of
+	 * {
+	 *   "messages": [
+	 *       Object of type Message
+	 * 	 ],
+	 *   "count": 2
+	 * }
+	 * @param $limit - the max amounts of results desired
+	 * @param false $enforceSafeResponseLengthLength - determines if we should truncate the results
+	 * @return string - the message formatted
+	 */
+	private function getPopularMessagesResponse(array $messageCounts, int $limit, bool $enforceSafeResponseLengthLength = false): string
+	{
+		// this value will be used in case we are retrying the message, after trying to send a message too long
+		// will truncate all messages longer than 60
+		$safeMessageContentLength = 60;
+
+		// process each message in the count relation
+		$lines = [];
+		$lines[] = Text::bold(sprintf(tt('command.top.start'), count($this->allMessages)) . ':');
+		// calculate if the actual results are less than the limit requested, then return only as much results as we can calculate
+		// otherwise return the same number of elements the limit is requesting
+		$min = min($limit, count($messageCounts));
+		for($i = 0; $i < $min; $i++){
+			$messageCount = $messageCounts[$i];
+			// get the last message that repeated this text
+			$last = $messageCount['messages'][count($messageCount['messages']) - 1];
+			$messageContent = $last->content;
+			// if the message it's too long and we are trying to enforce a safe length, truncate it
+			if($enforceSafeResponseLengthLength && strlen($messageContent) > $safeMessageContentLength){
+				$messageContent = substr($messageContent, 0, $safeMessageContentLength) . '...';
+			}
+			$lines[] = sprintf('> %s (%d %s, %s %s)',
+				Text::code($messageContent),
+				$messageCount['count'],
+				tt('command.top.item_times'),
+				tt('command.top.item_by'),
+				Text::bold($last->author->username)
+			);
+		}
+
+		// convert the array of lines into a single block of text
+		return array_reduce($lines, function ($response, $line) use($enforceSafeResponseLengthLength){
+			$updatedResponse = $response . $line . PHP_EOL;
+			if($enforceSafeResponseLengthLength && strlen($updatedResponse) > 2000){
+				return $response;
+			} else {
+				return $updatedResponse;
+			}
+		}, '');
 	}
 }
