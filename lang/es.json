@@ -52,10 +52,11 @@
             "name": "Top",
             "description": "Muestra que mensajes son los que más se repiten en el canal",
             "usage": "<cantidad> para obtener esa cantidad de comandos más usados, Sin argumentos para obtener los 5 mensajes más usados",
-            "start": "Esto es lo que más repitieron en los últimos 100 mensajes, me da flojera revisar todo el historial",
+            "start": "Esto es lo que más repitieron en los últimos %d mensajes, me da flojera revisar todo el historial",
             "item_times": "veces",
             "item_by": "última vez por",
-            "end_empty": "Parece que no repiten ningún mensaje, debe estar muy interesante la conversación aquí."
+            "end_empty": "Parece que no repiten ningún mensaje, debe estar muy interesante la conversación aquí",
+            "list_error": "Me hacen falta unos lentes, no pude leer el historial de mensajes, intenta de nuevo más tarde"
         }
     }
 }
