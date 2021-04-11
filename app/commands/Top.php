@@ -186,7 +186,7 @@ class Top extends Command
 	{
 		// this value will be used in case we are retrying the message, after trying to send a message too long
 		// will truncate all messages longer than 60
-		$safeMessageContentLength = 60;
+		$safeMessageContentLength = 100;
 
 		// process each message in the count relation
 		$lines = [];
