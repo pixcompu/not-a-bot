@@ -4,6 +4,9 @@ FROM php:7.4-cli
 # update package tree
 RUN apt-get update
 
+# needed to reproduce files from the server in a voice channel ($music command)
+RUN apt-get --yes install ffmpeg
+
 # set working directoty of the container
 COPY . /usr/src/not-a-bot
 WORKDIR /usr/src/not-a-bot

@@ -42,4 +42,4 @@ and fire it up again to see the changes reflected on the bot.
 
 ### Example
 
-![Screen Shot 2021-04-05 at 1 43 05](https://user-images.githubusercontent.com/11744752/113545714-4d624280-95b0-11eb-9aff-2a8618ec3413.png)
+![Screen Shot 2021-04-14 at 2 12 48](https://user-images.githubusercontent.com/11744752/114668983-00c0ea80-9cc7-11eb-9821-2c4d30457c8e.png)
