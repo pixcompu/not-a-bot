@@ -22,7 +22,12 @@ class Storage
 	 */
 	private function __construct()
 	{
-		$factory = (new Factory)->withServiceAccount(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'firebase.json')
+		// validate the credentials path, we need storage working for some commands like response
+		$credentialsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $_ENV['FIREBASE_CREDENTIALS_PATH'];
+		if(!file_exists($credentialsPath)){
+			throw new \Exception('No firebase credentials found on: ' . $credentialsPath);
+		}
+		$factory = (new Factory)->withServiceAccount($credentialsPath)
 			->withDatabaseUri($_ENV['FIREBASE_DATABASE_URL']);
 		$this->database = $factory->createDatabase();
 	}
