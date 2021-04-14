@@ -1,10 +1,17 @@
 # MacOS specific OS files
 .DS_store
+
 # dependencies
 /vendor
+
 # IDE
 /.idea
+
 # files with private configuration of google
 /secrets/*
+
+# only track gitkeep file just to have the folder in the project
+!/secrets/.gitkeep
+
 # environment
 .env
