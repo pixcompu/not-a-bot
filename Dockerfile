@@ -7,6 +7,10 @@ RUN apt-get update
 # needed to reproduce files from the server in a voice channel ($music command)
 RUN apt-get --yes install ffmpeg
 
+# both needed to use composer as it needs to wrap and unwrap dependencies
+RUN apt-get --yes install zip
+RUN apt-get --yes install unzip
+
 # set working directoty of the container
 COPY . /usr/src/not-a-bot
 WORKDIR /usr/src/not-a-bot
