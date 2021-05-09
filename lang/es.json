@@ -45,7 +45,7 @@
             "wrong": "Revisa qué te hace falta para acceder a los secretos del universo",
             "restricted": "¿Te conozco? ¡seguridaaaad! llévenselo...",
             "missing": "Sabes la clave, pero... ni yo sé donde está ese código, tal vez quieras verificarlo",
-            "success": "¡Ah perro! aquí esta el contenido de %s, soy fanático de las peliculas de 007 así que **este mensaje se autodestruirá en %d segundos**"
+            "success": "¡Ah perro! aquí esta el contenido de %s, soy fanático de las peliculas de 007 así que **este mensaje se autodestruirá en %d segundos**:"
         },
         "music": {
             "name": "Musica",

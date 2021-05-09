@@ -12,7 +12,7 @@ class Encode extends Command
 	 * url of the giphy API to get those GIF images
 	 * @var string
 	*/
-	private string $giphyUrl = "https://api.giphy.com/v1/gifs/search";
+	private string $giphyUrl = "https://api.giphy.com/v1/gifs/random";
 
 	/**
 	 * Encodes a message assigning to it a identifier so only a user with the password can open it later
@@ -69,11 +69,6 @@ class Encode extends Command
 			[
 				// the developer giphy key
 				'api_key' => $_ENV['GIPHY_API_KEY'],
-				// search string
-				'q' => $randomAlphabethLetter,
-				// how many gifs and how many places we should ignore
-				'limit' => 10,
-				'offset' => 0,
 				// switch to avoid get NSFW images
 				'rating' => 'g'
 			]
@@ -89,10 +84,9 @@ class Encode extends Command
 				$body = json_decode($response->getBody(), true);
 				// the response returned at lest one result
 				$gifUrl = $defaultGifUrl;
-				if(count($body['data']) > 0){
+				if(isset($body['data']['url'])){
 					// the response contains up to 10 results, we will take a random one from those
-					$index = rand(0, count($body['data']) - 1);	
-					$gifUrl = $body['data'][$index]['url'];
+					$gifUrl = $body['data']['url'];
 				}
 				// send the actual message to the channel
 				$this->message->channel->sendMessage(
