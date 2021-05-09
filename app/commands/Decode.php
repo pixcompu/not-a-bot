@@ -34,6 +34,20 @@ class Decode extends Command
 
 		// get the decoded content of this hash
 		$hash = $args[0];
+		if(filter_var($hash, FILTER_VALIDATE_URL)){
+			// the encode command generate giphy links with a _hash query param appended to them
+			// if we receive the full URL to decode we extract only the value of _hash from the link
+			$query = parse_url($hash, PHP_URL_QUERY);
+			$queryResult = [];
+
+			// parse the query string of the encoded URL (an example URL could be giphy.com/1221233123?_hash=1234567)
+			parse_str($query, $queryResult);
+
+			// only if the hash is present we use it, if not we use the full query as the hash so it will fail
+			if(isset($queryResult['_hash'])){
+				$hash = $queryResult['_hash'];
+			}
+		}
 		$channel = $this->messageDiscord->getChannel($this->message->channel_id);
 		$storage = Storage::getInstance();
 

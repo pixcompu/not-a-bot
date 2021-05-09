@@ -74,11 +74,16 @@ class Encode extends Command
 
 		// we will make a request to the giphy api
 		$defaultGifUrl =  'https://media.tenor.com/images/172d63b92f17fb1d90eb37e64bbee10e/tenor.gif';
-		$messageContent = Text::code($hash) . ' ' . Text::bold('#dd');
+		// send the actual message to the channel
+		$encodedQuery = http_build_query(
+			[
+				'_hash' => $hash
+			]
+		);
 		$client = new Client();
 		$promise = $client
 			->getAsync($this->giphyUrl . '?' . $query)
-			->then(function($response)use($messageContent, $defaultGifUrl){
+			->then(function($response)use($encodedQuery, $defaultGifUrl){
 				$body = json_decode($response->getBody(), true);
 				// the response returned at lest one result
 				$gifUrl = $defaultGifUrl;
@@ -86,15 +91,21 @@ class Encode extends Command
 					// the response contains up to 10 results, we will take a random one from those
 					$gifUrl = $body['data']['url'];
 				}
-				// send the actual message to the channel
-				$this->message->channel->sendMessage(
-					$messageContent . ' ' . $gifUrl
-				);
-			})->otherwise(function() use($messageContent, $defaultGifUrl){
+
+				// check if the giphy url already has query params
+				// if it has then we will need to appen our param to those 
+				// if not then we need to create the query params first
+				$finalUrl = $gifUrl;
+				if(parse_url($gifUrl, PHP_URL_QUERY)){
+					$finalUrl = $finalUrl . '&';
+				} else {
+					$finalUrl = $finalUrl . '?';
+				}
+				$finalUrl = $finalUrl . $encodedQuery;
+				$this->message->channel->sendMessage($finalUrl);
+			})->otherwise(function() use($encodedQuery, $defaultGifUrl){
 				// send the actual message to the channel (we don't care if the giphy API works, we send the default GIF if that happens)
-				$this->message->channel->sendMessage(
-					$messageContent . ' ' . $defaultGifUrl
-				);
+				$this->message->channel->sendMessage($defaultGifUrl . '?' . $encodedQuery);
 			});
 		$promise->wait();
 	}
