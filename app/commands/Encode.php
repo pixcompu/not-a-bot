@@ -60,17 +60,15 @@ class Encode extends Command
 	 * @param $hash
 	 */
 	public function sendEncodedMessage($hash){
-		$alphabeth = range('a', 'z');
-		shuffle($alphabeth);
-		$randomAlphabethLetter = $alphabeth[0];
-
 		// prepare the api call, giphy allow us to set these arguments
 		$query = http_build_query(
 			[
 				// the developer giphy key
 				'api_key' => $_ENV['GIPHY_API_KEY'],
 				// switch to avoid get NSFW images
-				'rating' => 'g'
+				'rating' => 'g',
+				// classification
+				'tag' => 'animal'
 			]
 		);
 

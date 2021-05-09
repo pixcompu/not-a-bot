@@ -34,13 +34,13 @@
         },
         "encode": {
             "name": "Codificar",
-            "description": "Crea un mensaje codificado",
+            "description": "Codifica un mensaje convirtiendolo en un hash",
             "usage": "<texto a codificar>",
             "empty": "¡No puedo codificar algo que no existe! porfa agrégale un argumento más al comando"
         },
         "decode": {
             "name": "Decodificar",
-            "description": "Muestra un mensaje a la banda previamente codificado",
+            "description": "Muestra un mensaje a la banda previamente codificado por un breve lapso de tiempo",
             "usage": "<hash> <contraseña>",
             "wrong": "Revisa qué te hace falta para acceder a los secretos del universo",
             "restricted": "¿Te conozco? ¡seguridaaaad! llévenselo...",
