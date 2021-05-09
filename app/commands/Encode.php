@@ -4,7 +4,7 @@ namespace app\commands;
 
 use util\Storage;
 use GuzzleHttp\Client;
-use util\Text;
+use Discord\Parts\Channel\Message;
 
 class Encode extends Command
 {
@@ -102,10 +102,14 @@ class Encode extends Command
 					$finalUrl = $finalUrl . '?';
 				}
 				$finalUrl = $finalUrl . $encodedQuery;
-				$this->message->channel->sendMessage($finalUrl);
+				$this->message->channel->sendMessage($finalUrl)->then(function(Message $message){
+					$message->react('😉');
+				});
 			})->otherwise(function() use($encodedQuery, $defaultGifUrl){
 				// send the actual message to the channel (we don't care if the giphy API works, we send the default GIF if that happens)
-				$this->message->channel->sendMessage($defaultGifUrl . '?' . $encodedQuery);
+				$this->message->channel->sendMessage($defaultGifUrl . '?' . $encodedQuery)->then(function(Message $message){
+					$message->react('😉');
+				});;
 			});
 		$promise->wait();
 	}
