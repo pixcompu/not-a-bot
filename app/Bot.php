@@ -97,7 +97,8 @@ class Bot
 			// if we got a message intended to be a command, then we will parse dynamically the command key to invoke a class
 			$content = str_replace($_ENV['COMMAND_PREFIX'], '', $message->content);
 			if(strlen($content) > 0){
-				$commandPieces = explode(' ', $content);
+				// allow multiple spaces between command arguments
+				$commandPieces = preg_split('/\s+/', $content, -1, PREG_SPLIT_NO_EMPTY);
 				$command = $this->getCommandByKeyword(array_shift($commandPieces));
 				// if we got a valid command, instantiate the command class to handle it
 				if(isset($command)) {
