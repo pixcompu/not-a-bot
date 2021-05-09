@@ -68,12 +68,13 @@ class Storage
 	 * Set a value in the responses collection of a guild
 	 * @param $guildId
 	 * @param $keyword
+	 * @param $collection
 	 * @param $value
 	 * @throws \Kreait\Firebase\Exception\DatabaseException
 	 */
-	public function setResponse($guildId, $keyword, $value)
+	public function setResponse($guildId, $keyword, $value, $collection = 'responses')
 	{
-		$response = $this->database->getReference('/guilds/' . $guildId . '/responses/' . $keyword);
+		$response = $this->database->getReference('/guilds/' . $guildId . '/' . $collection . '/' . $keyword);
 		$response->set([
 			'keyword' => $keyword,
 			'value' => $value
@@ -84,13 +85,14 @@ class Storage
 	 * Get a value from the responses collection of a guild
 	 * @param $guildId
 	 * @param $keyword
+	 * @param $collection
 	 * @return mixed
 	 * @throws \Kreait\Firebase\Exception\DatabaseException
 	 */
-	public function getResponse($guildId, $keyword)
+	public function getResponse($guildId, $keyword, $collection = 'responses')
 	{
 		return $this->database
-			->getReference('/guilds/' . $guildId . '/responses/' . $keyword)
+			->getReference('/guilds/' . $guildId . '/' . $collection . '/' . $keyword)
 			->getSnapshot()
 			->getValue();
 	}

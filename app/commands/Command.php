@@ -46,4 +46,25 @@ abstract class Command
 	 * @return mixed
 	 */
 	public abstract function execute() : void;
+
+	/**
+	 * @param string $content
+	 * @param int $autoDestructSeconds
+	 * @param boolean $isReply
+	 */
+	protected function sendTimedMessage($content, $autoDestructSeconds, $isReply = false)
+	{
+		$message = null;
+		if($isReply){
+			$message = $this->message->reply($content);
+		} else {
+			$message = $this->message->channel->sendMessage($content);
+		}
+		$message->then(function(Message $message)use($autoDestructSeconds){
+			$this->botDiscord->getLoop()->addTimer($autoDestructSeconds, function() use ($message){
+				$message->delete();
+			});
+		});
+		return $message;
+	}
 }

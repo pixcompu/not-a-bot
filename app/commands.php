@@ -17,14 +17,6 @@ return [
 		'keywords' => ['response', 're']
 	],
 	[
-		'name' => tt('command.gif.name'),
-		'class' => 'Gif',
-		'description' => tt('command.gif.description'),
-		'namespace' => '\\app\\commands',
-		'usage' => tt('command.gif.usage'),
-		'keywords' => ['gif']
-	],
-	[
 		'name' => tt('command.help.name'),
 		'class' => 'Help',
 		'description' => tt('command.help.description'),
@@ -47,5 +39,21 @@ return [
 		'namespace' => '\\app\\commands',
 		'usage' => tt('command.top.usage'),
 		'keywords' => ['top']
+	],
+	[
+		'name' => tt('command.encode.name'),
+		'class' => 'Encode',
+		'description' => tt('command.encode.description'),
+		'namespace' => '\\app\\commands',
+		'usage' => tt('command.encode.usage'),
+		'keywords' => ['encode', 'ec']
+	],
+	[
+		'name' => tt('command.decode.name'),
+		'class' => 'Decode',
+		'description' => tt('command.decode.description'),
+		'namespace' => '\\app\\commands',
+		'usage' => tt('command.decode.usage'),
+		'keywords' => ['decode', 'dc']
 	]
 ];

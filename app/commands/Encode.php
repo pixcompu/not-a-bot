@@ -1,0 +1,109 @@
+<?php
+
+namespace app\commands;
+
+use util\Storage;
+use GuzzleHttp\Client;
+use util\Text;
+
+class Encode extends Command
+{
+	/**
+	 * url of the giphy API to get those GIF images
+	 * @var string
+	*/
+	private string $giphyUrl = "https://api.giphy.com/v1/gifs/search";
+
+	/**
+	 * Encodes a message assigning to it a identifier so only a user with the password can open it later
+	 */
+	public function execute(): void
+	{
+		$args = $this->args;
+		
+		// delete the message as soon as possible because it's sensitive
+		$this->message->delete();
+
+		// for errors we don't want to keep them for too long in the channel because they will be seen right away by the author
+		$errorAutodestroySeconds = 10;
+
+		// validate that we got something to encode
+		if(empty($args)){
+			$this->sendTimedMessage(tt('command.encode.empty'), $errorAutodestroySeconds, true);
+			return;
+		}
+
+		// generate a unique id to assign to this content
+		$hash = uniqid();
+
+		// get the channel to scope the encoded content by channel
+		$channel = $this->messageDiscord->getChannel($this->message->channel_id);
+
+		// the value will be all the text after the command
+		$value = implode(' ', $args);
+
+		// save the content to the encoded collection of the database
+		$storage = Storage::getInstance();
+		$storage->setResponse(
+			$channel->guild_id,
+			$hash,
+			$value,
+			'encoded'
+		);
+
+		// send the hash assigned to this message with a random GIF, so it can be decoded anytime
+		$this->sendEncodedMessage($hash);
+	}
+
+	/**
+	 * Sends a hash to the channel with a random GIF
+	 * @param $hash
+	 */
+	public function sendEncodedMessage($hash){
+		$alphabeth = range('a', 'z');
+		shuffle($alphabeth);
+		$randomAlphabethLetter = $alphabeth[0];
+
+		// prepare the api call, giphy allow us to set these arguments
+		$query = http_build_query(
+			[
+				// the developer giphy key
+				'api_key' => $_ENV['GIPHY_API_KEY'],
+				// search string
+				'q' => $randomAlphabethLetter,
+				// how many gifs and how many places we should ignore
+				'limit' => 10,
+				'offset' => 0,
+				// switch to avoid get NSFW images
+				'rating' => 'g'
+			]
+		);
+
+		// we will make a request to the giphy api
+		$defaultGifUrl =  'https://media.tenor.com/images/172d63b92f17fb1d90eb37e64bbee10e/tenor.gif';
+		$messageContent = Text::code($hash) . ' ' . Text::bold('#dd');
+		$client = new Client();
+		$promise = $client
+			->getAsync($this->giphyUrl . '?' . $query)
+			->then(function($response)use($messageContent, $defaultGifUrl){
+				$body = json_decode($response->getBody(), true);
+				// the response returned at lest one result
+				$gifUrl = $defaultGifUrl;
+				if(count($body['data']) > 0){
+					// the response contains up to 10 results, we will take a random one from those
+					$index = rand(0, count($body['data']) - 1);	
+					$gifUrl = $body['data'][$index]['url'];
+				}
+				// send the actual message to the channel
+				$this->message->channel->sendMessage(
+					$messageContent . ' ' . $gifUrl
+				);
+			})->otherwise(function() use($messageContent, $defaultGifUrl){
+				// send the actual message to the channel (we don't care if the giphy API works, we send the default GIF if that happens)
+				$this->message->channel->sendMessage(
+					$messageContent . ' ' . $defaultGifUrl
+				);
+			});
+		$promise->wait();
+	}
+}

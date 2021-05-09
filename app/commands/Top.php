@@ -4,7 +4,6 @@ namespace app\commands;
 
 use Discord\Helpers\Collection;
 use Discord\Parts\Channel\Message;
-use Google\CRC32\PHP;
 use util\Text;
 
 class Top extends Command

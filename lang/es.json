@@ -24,12 +24,6 @@
             "missing": "Hmmm... no recuerdo esa palabra",
             "list": "Supongo que quieres ver todas las respuestas que tengo memorizadas, aqui están"
         },
-        "gif": {
-            "name": "Gif",
-            "description": "Muestra un gif aleatorio de Giphy para cuando no sabes que decir",
-            "usage": "<texto> para obtener un gif aleatorio relacionado al texto",
-            "empty": "Parece que nadie comparte tus gustos en gifs carnal"
-        },
         "help": {
             "name": "Ayuda",
             "description": "Muestra todos los comandos disponibles",
@@ -37,6 +31,21 @@
             "start": "Esto es todo lo que sé hacer",
             "keywords_start": "Lo puedes invocar de las siguientes formas",
             "usage_start": "Usos"
+        },
+        "encode": {
+            "name": "Codificar",
+            "description": "Crea un mensaje codificado",
+            "usage": "<texto a codificar>",
+            "empty": "¡No puedo codificar algo que no existe! porfa agrégale un argumento más al comando"
+        },
+        "decode": {
+            "name": "Decodificar",
+            "description": "Muestra un mensaje a la banda previamente codificado",
+            "usage": "<hash> <contraseña>",
+            "wrong": "Revisa qué te hace falta para acceder a los secretos del universo",
+            "restricted": "¿Te conozco? ¡seguridaaaad! llévenselo...",
+            "missing": "Sabes la clave, pero... ni yo sé donde está ese código, tal vez quieras verificarlo",
+            "success": "¡Ah perro! aquí esta el contenido de %s, soy fanático de las peliculas de 007 así que **este mensaje se autodestruirá en %d segundos**"
         },
         "music": {
             "name": "Musica",
