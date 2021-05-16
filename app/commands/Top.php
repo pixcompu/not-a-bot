@@ -156,7 +156,7 @@ class Top extends Command
 
 			$this->allMessages = array_merge($rawMessages, $this->allMessages);
 			// we either reached the end of the channel or reached our max limit of messages we want to retrieve
-			if(count($rawMessages) < 100 || count($this->allMessages) >= $this->maxNumberOfMessagesToRetrieve){
+			if(empty($rawMessages) || count($this->allMessages) >= $this->maxNumberOfMessagesToRetrieve){
 				call_user_func($onDone);
 			} else {
 				$this->retrieveFullMessageHistory($this->allMessages[0], $onDone, $onFail);
