@@ -50,6 +50,7 @@ class Top extends Command
 		}
 
 		// this potentially is a long operation, so we will make the bot appear like it's typing
+		$this->commandIsInProgress = true;
 		$this->notifyTyping();
 
 		// get the guild where the bot was called from the db
@@ -101,7 +102,16 @@ class Top extends Command
 
 		// sort occurrences from greatest to lowest
 		usort($messageCounts, function($a, $b){
-			return $b['count'] - $a['count'];
+			$lastAText = $a['messages'][count($a['messages']) - 1];
+			$lastBText = $b['messages'][count($b['messages']) - 1];
+			if($b['count'] === $a['count']){
+				// to avoid randomize the results when they have the same count
+				// we use as second criteria the order by message content
+				// so even if they have the same count they still have some order defined
+				return strcasecmp($lastAText, $lastBText);
+			} else {
+				return $b['count'] - $a['count'];	
+			}
 		});
 
 		// get the information of the most popular messages in form of a block of text
@@ -141,7 +151,6 @@ class Top extends Command
 
 			// sort by date asc
 			usort($rawMessages, function($a, $b){
-				if($a['timestamp'] === $b['timestamp']) return 0;
 				return strtotime($a['timestamp']) - strtotime($b['timestamp']);
 			});
 
@@ -150,7 +159,7 @@ class Top extends Command
 			if(count($rawMessages) < 100 || count($this->allMessages) >= $this->maxNumberOfMessagesToRetrieve){
 				call_user_func($onDone);
 			} else {
-				$this->retrieveFullMessageHistory($rawMessages[0], $onDone, $onFail);
+				$this->retrieveFullMessageHistory($this->allMessages[0], $onDone, $onFail);
 			}
 		}, $onFail);
 	}
@@ -160,10 +169,21 @@ class Top extends Command
 	 */
 	private function notifyTyping()
 	{
-		$this->message->channel->broadcastTyping()->then(function(){
+		$loop = $this->botDiscord->getLoop();
+		$notificationActiveSeconds = 5;
+		// set the initial notification, so the bot appears as typing
+		$this->message->channel->broadcastTyping();
+		// set a timer that will run each 5 seconds to check if the bot finished processing the message history
+		// if not then it will notify the bot as still typing
+		// if yes then it ends the timer so it doesn't run indefinetely
+		$loop->addPeriodicTimer($notificationActiveSeconds, function(\React\EventLoop\Timer\Timer $timer) use(&$loop){
+			// the broadcast tries are a safe check to ensure we end the timer
 			if($this->commandIsInProgress && $this->broadcastTypingRetriesRemaining > 0){
 				$this->broadcastTypingRetriesRemaining--;
-				$this->notifyTyping();
+				$this->message->channel->broadcastTyping();
+			} else {
+				// we finished processing cancel this timer to free memory
+				$loop->cancelTimer($timer);
 			}
 		});
 	}
