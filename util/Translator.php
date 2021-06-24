@@ -24,7 +24,7 @@ class Translator
 		// those translation files will contain every text the bot will output to the servers
 		// we will have one translation file for each language we want to support
 		// get the environment languange
-		$language = $_ENV['LANG'];
+		$language = $_ENV['LANGUAGE'];
 
 		// try to find the translation file in out lang folder of the project
 		$path = __DIR__ . DIRECTORY_SEPARATOR . './../lang/' . $language . '.json';
