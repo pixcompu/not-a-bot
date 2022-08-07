@@ -1,6 +1,7 @@
 version: '3'
 services:
-  cli:
+  php:
+    entrypoint: php entrypoint.php
     build:
       context: .
       dockerfile: Dockerfile
