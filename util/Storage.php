@@ -93,8 +93,22 @@ class Storage
 	{
 		return $this->database
 			->getReference('/guilds/' . $guildId . '/' . $collection . '/' . $keyword)
-			->getSnapshot()
 			->getValue();
+	}
+
+	/**
+	 *
+	 * @param $guildId
+	 * @param $keyword
+	 * @param string $collection
+	 * @return \Kreait\Firebase\Database\Reference
+	 * @throws \Kreait\Firebase\Exception\DatabaseException
+	 */
+	public function removeResponse($guildId, $keyword, $collection = 'responses')
+	{
+		return $this->database
+			->getReference('/guilds/' . $guildId . '/' . $collection . '/' . $keyword)
+			->remove();
 	}
 
 	/**
@@ -105,7 +119,6 @@ class Storage
 	{
 		return $this->database
 			->getReference('/guilds/' . $guildId . '/responses')
-			->getSnapshot()
 			->getValue();
 	}
 }

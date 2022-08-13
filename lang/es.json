@@ -22,7 +22,9 @@
             "usage": "<alias> <texto> para asociar un texto/link a un alias, <alias> para obtener el texto/link asociado al alias, Sin argumentos para mostrar todas las respuestas guardadas",
             "set": "¡Felicidades! a partir de ahora ya no tendrás que escribir tanto, recordaré '%s' por tí",
             "missing": "Hmmm... no recuerdo esa palabra",
-            "list": "Supongo que quieres ver todas las respuestas que tengo memorizadas, aqui están"
+            "list": "Supongo que quieres ver todas las respuestas que tengo memorizadas, aqui están",
+            "empty": "No tengo ninguna respuesta guardada, tal vez quieras primero guardar una, son gratis",
+            "remove": "Está bien olvidaré %s por tu paz mental"
         },
         "help": {
             "name": "Ayuda",

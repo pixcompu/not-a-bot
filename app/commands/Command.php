@@ -31,9 +31,9 @@ abstract class Command
 	 * @param Discord $messageDiscord
 	 * @param Discord $botDiscord
 	 * @param Message $message
-	 * @param $args
+	 * @param array $args
 	 */
-	public function __construct(Discord $messageDiscord, Discord $botDiscord, Message $message, $args)
+	public function __construct(Discord $botDiscord, Discord $messageDiscord, Message $message, array $args = [])
 	{
 		$this->messageDiscord = $messageDiscord;
 		$this->botDiscord = $botDiscord;
