@@ -4,6 +4,7 @@ namespace app;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
+use Discord\Parts\Interactions\Interaction;
 use Discord\WebSockets\Event;
 use ReflectionClass;
 use util\Storage;
@@ -73,6 +74,34 @@ class Bot
 			$this->analyze($message, $userDiscord);
 		});
 
+		$this->botDiscord->on(Event::INTERACTION_CREATE, function (Interaction $interaction, Discord $discord) {
+			// we need to validate that the same user that triggered the message is the same that is interacting
+			if($interaction->user->id === $interaction->user->id){
+				// in the custom id we saved the classname so we invoke the class with that name
+				$class = explode('|', $interaction->data->custom_id)[0] ?? null;
+				if(isset($class)){
+					try{
+						$class = new ReflectionClass($class);
+						$instance = $class->newInstanceArgs([
+							$this->botDiscord,
+							$discord,
+							$interaction->message,
+							[]
+						]);
+						// and execute the interact method
+						$instance->interact($interaction);
+					} catch(\Throwable $ex){
+						$interaction->message->reply(tt('command.general.error.instance'));
+					}
+				} else {
+					$interaction->message->reply(tt('command.general.error.instance'));
+				}
+			}
+
+			// we need to acknowledge the interaction so discord know that we processed it
+			$interaction->acknowledge();
+		});
+
 		$this->botDiscord->on(Event::GUILD_CREATE, function (Guild $guild){
 			Storage::getInstance()->setGuild($guild->id, $guild->name);
 		});
@@ -105,8 +134,8 @@ class Bot
 					try{
 						$class = new ReflectionClass($command['namespace'] . '\\' . $command['class']);
 						$instance = $class->newInstanceArgs([
-							$userDiscord,
 							$this->botDiscord,
+							$userDiscord,
 							$message,
 							$commandPieces
 						]);

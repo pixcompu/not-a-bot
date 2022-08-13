@@ -1,9 +1,9 @@
 {
     "require": {
         "vlucas/phpdotenv": "^5.3",
-        "team-reflex/discord-php": "^5.1",
-        "guzzlehttp/guzzle": "^7.3",
-        "kreait/firebase-php": "^5.17",
+        "team-reflex/discord-php": "^7",
+        "guzzlehttp/guzzle": "^7",
+        "kreait/firebase-php": "^6",
 	    "ext-json": "*"
 	},
     "name": "pixcompu/not-a-bot",
