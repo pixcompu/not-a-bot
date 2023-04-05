@@ -1,25 +1,24 @@
 <?php
 
 namespace app;
+use Discord\Builders\CommandBuilder;
+use Discord\Builders\MessageBuilder;
 use Discord\Discord;
-use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
+use Discord\Parts\Interactions\Command\Option;
 use Discord\Parts\Interactions\Interaction;
 use Discord\WebSockets\Event;
 use ReflectionClass;
+use util\Debug;
 use util\Storage;
+use function React\Promise\all;
 
 class Bot
 {
 	/**
 	 * @var Discord - main object to interact with discord API
 	 */
-	private Discord $botDiscord;
-
-	/**
-	 * @var array[]
-	 */
-	private array $commands;
+	private Discord $discord;
 
 	/**
 	 * Bot constructor.
@@ -28,23 +27,11 @@ class Bot
 	 */
 	public function __construct()
 	{
-		// parse commands from stand alone file, we will configure the commands in their own separate file so we can access them
-		// from all places where we want them
-		$this->commands = require(__DIR__ . '/commands.php');
-
 		// initialize discord bot, we only need to provider our secret token
 		$options = [
 			'token' => $_ENV['BOT_TOKEN'],
 		];
-		$this->botDiscord = new Discord($options);
-
-		// validate that our list of commands doesn't have collisions
-		$allKeywords = array_merge(...array_column($this->commands, 'keywords'));
-		$occurrenceByKeyword = array_count_values($allKeywords);
-		$keywordsWithMultipleOccurrences = array_keys(array_diff($occurrenceByKeyword, [1]));
-		if(count($keywordsWithMultipleOccurrences) > 0){
-			throw new \Exception('Two commands cant share the same keyword, repeated keywords found: ' . implode(',', $keywordsWithMultipleOccurrences));
-		}
+		$this->discord = new Discord($options);
 	}
 
 	/**
@@ -52,8 +39,9 @@ class Bot
 	 */
 	public function execute()
 	{
-		$this->botDiscord->on('ready', \Closure::fromCallable([$this, 'ready']));
-		$this->botDiscord->run();
+		$this->discord->on('ready', \Closure::fromCallable([$this, 'ready']));
+		$this->discord->on('error', \Closure::fromCallable([$this, 'error']));
+		$this->discord->run();
 	}
 
 	/**
@@ -61,8 +49,40 @@ class Bot
 	 */
 	private function ready()
 	{
-		echo tt('setup.ready'), PHP_EOL;
-		$this->listen();
+		// we will define if we want to first delete all commands before upserting the ones we have in the code
+		if($_ENV['SET_UP_COMMANDS_ON_START']){
+			$this->pruneAllCommands()->then(function($results) {
+				Debug::log('deleted ' . count($results) . ' commands');
+				$this->setUpStaticCommands()->then(function($results){
+					Debug::log('created ' . count($results) . ' commands');
+					Debug::log(tt('setup.ready'));
+					$this->listen();
+				});
+			});
+		} else {
+			$this->listen();
+		}
+	}
+
+
+	private function error($error)
+	{
+		Debug::log('A general error has occurred');
+		Debug::log($error);
+	}
+
+	private function pruneAllCommands()
+	{
+		// clear all commands because we will submit them on the next step
+		// this ensures that we don't have in discord any command that we don't have in our code
+		return $this->discord->application->commands->freshen()->then(function($commandMap) {
+			$promises = [];
+			foreach ($commandMap as $key => $command){
+				Debug::log('deleting command ' . $key . ' name: ' . $command->name);
+				$promises[] = $this->discord->application->commands->delete($command);
+			}
+			return all($promises);
+		});
 	}
 
 	/**
@@ -70,87 +90,41 @@ class Bot
 	 */
 	private function listen()
 	{
-		$this->botDiscord->on(Event::MESSAGE_CREATE, function (Message $message, Discord $userDiscord) {
-			$this->analyze($message, $userDiscord);
+		$commandKeys = array_keys($this->getStaticCommandDefinitions());
+		foreach ($commandKeys as $commandKey) {
+			Debug::log('listening to slash command >' . $commandKey);
+			$this->discord->listenCommand($commandKey, function (Interaction $interaction) use ($commandKey){
+				Debug::log('trying to process command >' . $commandKey);
+				$this->processStaticCommand($commandKey, $interaction);
+			});
+		}
+		$this->discord->on(Event::GUILD_CREATE, function (Guild $guild){
+			Storage::getInstance()->setGuild($guild->id, $guild->name);
 		});
-
-		$this->botDiscord->on(Event::INTERACTION_CREATE, function (Interaction $interaction, Discord $discord) {
-			// we need to validate that the same user that triggered the message is the same that is interacting
-			if($interaction->user->id === $interaction->user->id){
-				// in the custom id we saved the classname so we invoke the class with that name
-				$class = explode('|', $interaction->data->custom_id)[0] ?? null;
-				if(isset($class)){
-					try{
-						$class = new ReflectionClass($class);
-						$instance = $class->newInstanceArgs([
-							$this->botDiscord,
-							$discord,
-							$interaction->message,
-							[]
-						]);
-						// and execute the interact method
-						$instance->interact($interaction);
-					} catch(\Throwable $ex){
-						$interaction->message->reply(tt('command.general.error.instance'));
-					}
-				} else {
+		$this->discord->on(Event::INTERACTION_CREATE, function (Interaction $interaction) {
+			// in the custom id we saved the classname so we invoke the class with that name
+			Debug::log('received interaction');
+			Debug::log($interaction);
+			$class = explode('|', $interaction->data->custom_id)[0] ?? null;
+			if (isset($class)) {
+				try {
+					$class = new ReflectionClass($class);
+					$instance = $class->newInstanceArgs([
+						$this->discord,
+						$interaction
+					]);
+					// and execute the interact method
+					$instance->interact();
+				} catch (\Throwable $ex) {
 					$interaction->message->reply(tt('command.general.error.instance'));
 				}
+			} else {
+				$interaction->message->reply(tt('command.general.error.instance'));
 			}
-
 			// we need to acknowledge the interaction so discord know that we processed it
 			$interaction->acknowledge();
 		});
-
-		$this->botDiscord->on(Event::GUILD_CREATE, function (Guild $guild){
-			Storage::getInstance()->setGuild($guild->id, $guild->name);
-		});
-	}
-
-	/**
-	 * analyze the message to see if it should trigger a command
-	 * @param Message $message
-	 * @param Discord $userDiscord
-	 * @throws \Exception
-	 */
-	private function analyze(Message $message, Discord $userDiscord)
-	{
-		// message was from the same bot, ignore, if the bot answers with a message that could trigger the bot again
-		// we could end in a infinite loop
-		if(isset($message->author->user->bot) && $message->author->user->bot) return;
-
-		// determine if this intended to be direct call to the bot
-		// we will only consider that is a intended bot call if the preffix is the first caracter of the message
-		$isUsingPrefix = ($message->content[0] ?? '') === $_ENV['COMMAND_PREFIX'];
-		if($isUsingPrefix){
-			// if we got a message intended to be a command, then we will parse dynamically the command key to invoke a class
-			$content = str_replace($_ENV['COMMAND_PREFIX'], '', $message->content);
-			if(strlen($content) > 0){
-				// allow multiple spaces between command arguments
-				$commandPieces = preg_split('/\s+/', $content, -1, PREG_SPLIT_NO_EMPTY);
-				$command = $this->getCommandByKeyword(array_shift($commandPieces));
-				// if we got a valid command, instantiate the command class to handle it
-				if(isset($command)) {
-					try{
-						$class = new ReflectionClass($command['namespace'] . '\\' . $command['class']);
-						$instance = $class->newInstanceArgs([
-							$this->botDiscord,
-							$userDiscord,
-							$message,
-							$commandPieces
-						]);
-						$instance->execute();
-					} catch(\Throwable $ex){
-						echo $ex->getMessage() . PHP_EOL;
-						$message->reply(tt('command.general.error.instance'));
-					}
-				} else {
-					$message->reply(tt('command.general.error.missing'));
-				}
-			} else {
-				$message->reply(tt('command.general.error.empty'));
-			}
-		}
+		Debug::log(tt('setup.ready'));
 	}
 
 	/**
@@ -159,24 +133,120 @@ class Bot
 	 */
 	public function __destruct()
 	{
-		if(isset($this->botDiscord)){
-			$this->botDiscord->close();
+		if(isset($this->discord)){
+			$this->discord->close();
 		}
 	}
 
-	/**
-	 * @param $requestedCommandKeyword
-	 * @return array|null
-	 */
-	private function getCommandByKeyword($requestedCommandKeyword): ?array
+	private function getStaticCommandDefinitions()
 	{
-		foreach ($this->commands as $command){
-			foreach ($command['keywords'] as $keyword){
-				if($keyword === $requestedCommandKeyword){
-					return $command;
-				}
+		return [
+			'meow' => [
+				'class' => \app\commands\Meow::class
+			],
+			'music' => [
+				'class' => \app\commands\Music::class,
+			],
+			'catalog' => [
+				'class' => \app\commands\Catalog::class,
+			],
+			'top' => [
+				'class' => \app\commands\Top::class,
+				'options' => [
+					[
+						'name' => 'number',
+						'description' => 'Number of results to show',
+						'type' => Option::INTEGER,
+						'required' => true
+					]
+				]
+			],
+			'encode' => [
+				'class' => \app\commands\Encode::class,
+				'options' => [
+					[
+						'name' => 'content',
+						'description' => 'Content to encode',
+						'type' => Option::STRING,
+						'required' => true
+					]
+				]
+			],
+			'decode' => [
+				'class' => \app\commands\Decode::class,
+				'options' => [
+					[
+						'name' => 'key',
+						'description' => 'Content to decode',
+						'type' => Option::STRING,
+						'required' => true
+					],
+					[
+						'name' => 'secret',
+						'description' => 'Passphrase to decode',
+						'type' => Option::STRING,
+						'required' => true
+					]
+				]
+			],
+			'response' => [
+				'class' => \app\commands\Response::class,
+				'options' => [
+					[
+						'name' => 'key',
+						'description' => 'Key to show',
+						'type' => Option::STRING,
+						'required' => true
+					],
+					[
+						'name' => 'content',
+						'description' => 'Content to associate to the key',
+						'type' => Option::STRING,
+						'required' => false
+					]
+				]
+			]
+		];
+	}
+
+	private function setUpStaticCommands() {
+		$commandConfigurations = $this->getStaticCommandDefinitions();
+		$promises = [];
+		foreach($commandConfigurations as $key => $config){
+			$description = tt('command.' . $key . '.description');
+			$rawCommand = CommandBuilder::new()
+				->setName($key)
+				->setDescription($description);
+			foreach($config['options'] ?? [] as $option){
+				$rawCommand->addOption(
+					(new Option($this->discord))
+						->setName($option['name'])
+						->setDescription($option['description'])
+						->setType($option['type'])
+						->setRequired($option['required'])
+				);
 			}
+			Debug::log('creating command ' . $key);
+			$command = $this->discord->application->commands->create($rawCommand->toArray());
+			$promises[] = $this->discord->application->commands->save($command);
 		}
-		return null;
+		return all($promises);
+	}
+
+	private function processStaticCommand($key, Interaction $interaction)
+	{
+		$config = $this->getStaticCommandDefinitions()[$key];
+		try {
+			$class = new ReflectionClass($config['class']);
+			$instance = $class->newInstanceArgs([
+				$this->discord,
+				$interaction
+			]);
+			$instance->execute();
+		} catch(\Throwable $ex){
+			Debug::log($ex->getFile() . '(' . $ex->getLine() . ') ' . $ex->getMessage());
+			Debug::log($ex->getTraceAsString());
+			$interaction->respondWithMessage(MessageBuilder::new()->setContent(tt('command.general.error.instance')));
+		}
 	}
 }

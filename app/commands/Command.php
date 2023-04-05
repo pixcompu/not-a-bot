@@ -1,44 +1,43 @@
 <?php
 
 namespace app\commands;
+use Discord\Builders\MessageBuilder;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
+use Discord\Parts\Interactions\Interaction;
 
 abstract class Command
 {
 	/**
 	 * @var Discord
 	 */
-	protected Discord $botDiscord;
+	protected Discord $discord;
 
 	/**
-	 * @var Discord
+	 * @var Interaction
 	 */
-	protected Discord $messageDiscord;
+	protected Interaction $interaction;
 
 	/**
-	 * @var Message - the message that triggered this command
+	 * @var array|mixed
 	 */
-	protected Message $message;
+	protected array $options;
 
-	/**
-	 * @var array - the array of additional arguments passed with the command
-	 */
-	protected array $args;
+	private $channel;
+
+	private $replied = false;
 
 	/**
 	 * Command constructor.
-	 * @param Discord $messageDiscord
-	 * @param Discord $botDiscord
-	 * @param Message $message
-	 * @param array $args
+	 * @param Discord $discord
+	 * @param Interaction $interaction
 	 */
-	public function __construct(Discord $botDiscord, Discord $messageDiscord, Message $message, array $args = [])
+	public function __construct(Discord $discord, Interaction $interaction)
 	{
-		$this->messageDiscord = $messageDiscord;
-		$this->botDiscord = $botDiscord;
-		$this->message = $message;
-		$this->args = $args;
+		$this->interaction = $interaction;
+		$this->channel = $interaction->channel;
+		$this->discord = $discord;
+		$this->options = json_decode(json_encode((object)$interaction->data->options->toArray()), true);
 	}
 
 	/**
@@ -50,21 +49,36 @@ abstract class Command
 	/**
 	 * @param string $content
 	 * @param int $autoDestructSeconds
-	 * @param boolean $isReply
 	 */
-	protected function sendTimedMessage($content, $autoDestructSeconds, $isReply = false)
+	protected function sendTimedMessage($content, $autoDestructSeconds)
 	{
-		$message = null;
-		if($isReply){
-			$message = $this->message->reply($content);
-		} else {
-			$message = $this->message->channel->sendMessage($content);
-		}
-		$message->then(function(Message $message)use($autoDestructSeconds){
-			$this->botDiscord->getLoop()->addTimer($autoDestructSeconds, function() use ($message){
+		return $this->postOnChannel($content)->then(function(Message $message)use($autoDestructSeconds){
+			$this->discord->getLoop()->addTimer($autoDestructSeconds, function() use ($message){
 				$message->delete();
 			});
 		});
-		return $message;
+	}
+
+	protected function reply($content, $ephemeral = false){
+		if($content instanceof MessageBuilder){
+			$finalMessage = $content;
+		} else {
+			$finalMessage = MessageBuilder::new()->setContent($content);
+		}
+		if($this->replied){
+			return $this->interaction->updateOriginalResponse(
+				$finalMessage
+			);
+		} else {
+			$this->replied = true;
+			return $this->interaction->respondWithMessage(
+				$finalMessage,
+				$ephemeral
+			);
+		}
+	}
+
+	protected function postOnChannel($content){
+		return $this->channel->sendMessage($content);
 	}
 }
