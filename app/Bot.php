@@ -144,6 +144,17 @@ class Bot
 			'meow' => [
 				'class' => \app\commands\Meow::class
 			],
+			'd1' => [
+				'class' => \app\commands\D1::class,
+				'options' => [
+					[
+						'name' => 'game',
+						'description' => 'Game to play',
+						'type' => Option::STRING,
+						'required' => true
+					]
+				]
+			],
 			'music' => [
 				'class' => \app\commands\Music::class,
 			],

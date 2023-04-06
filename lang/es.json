@@ -70,6 +70,11 @@
             "text_long": "No quiero ponerles toda una biblia aquí así que los mensajes y resultados aparecerán truncados",
             "wrong_limit": "Sólo puedo mostrar de 1 a 20 lugares, tómalo o déjalo",
             "middle": "Ya llevo leído  %d mensajes (puedo leer hasta %d mensajes), ahorita saco mi calculadora, espera un poco más..."
+        },
+        "d1": {
+            "name": "D1",
+            "description": "Invoca a todos para que se echen unas rondas",
+            "main": "Hey %s, dice %s que ya es hora de unas ronditas de %s bros"
         }
     }
 }
