@@ -51,13 +51,14 @@ class Decode extends Command
 			$this->reply(tt('command.decode.missing'), true);
 			return;
 		}
+		$value = $response['value'];
 
 		// to show the decoded content we want to keep it for many seconds so many people can see the decoded content
 		$autodestroySeconds = $_ENV['DECODE_AUTODESTROY_SECONDS'];
 
 		// send the decoded content and destroy it in some seconds, so it remains encoded
 		$this->reply(tt('command.decode.done'), true);
-		$this->sendTimedMessage(
+		$this->postTemporalMessage(
 			sprintf(
 				tt('command.decode.success'),
 				Text::code(($this->interaction->user->username ?? '')),
@@ -65,7 +66,8 @@ class Decode extends Command
 				$autodestroySeconds
 			),
 			$autodestroySeconds
-		);
-		$this->sendTimedMessage($response['value'], $autodestroySeconds);
+		)->then(function() use($value, $autodestroySeconds){
+			$this->postTemporalMessage($value, $autodestroySeconds);
+		});
 	}
 }

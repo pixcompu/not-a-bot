@@ -3,10 +3,6 @@
 namespace util;
 
 use GuzzleHttp\Client;
-use Kreait\Firebase\Contract\Database;
-use Kreait\Firebase\Factory;
-use React\Promise\ExtendedPromiseInterface;
-use React\Promise\Promise;
 
 class Gif
 {

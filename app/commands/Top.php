@@ -117,8 +117,8 @@ class Top extends Command
 				// if we found that the top commands response is too long (make the request fail)
 				// we try again but enforcing and truncating the responses
 				$safeFormattedResponse = $this->getPopularMessagesResponse($messageCounts, $limit, true);
-				$this->postOnChannel(tt('command.top.text_long'));
-				$this->postOnChannel($safeFormattedResponse);
+				$this->postMessage(tt('command.top.text_long'));
+				$this->postMessage($safeFormattedResponse);
 			});
 		} else {
 			// otherwise reply

@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use Discord\Http\Exceptions\NoPermissionsException;
 use util\Gif;
 use util\Storage;
 use Discord\Parts\Channel\Message;
@@ -36,6 +37,7 @@ class Encode extends Command
 	/**
 	 * Sends a hash to the channel with a random GIF
 	 * @param $hash
+	 * @throws NoPermissionsException
 	 */
 	public function processEncodedMessage($hash){
 		$gifUrl = Gif::getInstance()->random('animal');
@@ -55,7 +57,7 @@ class Encode extends Command
 
 		// if we just reply, the slash command will be shown in the channel history, because each slash command have a response
 		// so what we do is to answer the slash command and then delete the full interaction, and post a new message outside the interaction
-		$this->postOnChannel($finalUrl)->then(function(Message $message){
+		$this->postMessage($finalUrl)->then(function(Message $message){
 			$message->react('😉');
 		});
 	}

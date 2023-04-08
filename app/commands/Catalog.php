@@ -63,8 +63,8 @@ class Catalog extends InteractiveCommand
 			);
 
 			// notify on the channel that the response was deleted
-			$this->postOnChannel(sprintf(tt('command.catalog.deleted'), Text::bold($this->interaction->user->username), Text::bold($selectedKeyword)));
-			$this->postOnChannel($response['value']);
+			$this->postMessage(sprintf(tt('command.catalog.deleted'), Text::bold($this->interaction->user->username), Text::bold($selectedKeyword)));
+			$this->postMessage($response['value']);
 		}
 	}
 

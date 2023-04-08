@@ -31,6 +31,13 @@ class Response extends Command
 		}
 	}
 
+	/**
+	 * Saves the response in the DB
+	 * @param $keyword
+	 * @param $content
+	 * @return void
+	 * @throws DatabaseException
+	 */
 	private function saveResponse($keyword, $content)
 	{
 		// set a new custom response for a specific keyword
@@ -46,7 +53,6 @@ class Response extends Command
 	/**
 	 * Show the response selected in the channel
 	 * @param $keyword
-	 * @throws NoPermissionsException
 	 * @throws DatabaseException
 	 */
 	private function showResponse($keyword)
