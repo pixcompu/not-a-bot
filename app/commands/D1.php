@@ -43,7 +43,7 @@ class D1 extends Command
 			'naruto',
 			'spy x family',
 			'gigachad',
-			'marmota espacial'
+			'lets go'
 		];
 
 		// if we have at least one secret game keys
