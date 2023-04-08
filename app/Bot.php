@@ -71,6 +71,9 @@ class Bot
 					Debug::log('created ' . count($results) . ' commands');
 					Debug::log(tt('setup.ready'));
 					$this->listen();
+				}, function($error){
+					Debug::log('There were errors while setting up the commands');
+					Debug::log($error ?? '');
 				});
 			});
 		} else {
