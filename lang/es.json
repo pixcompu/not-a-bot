@@ -1,6 +1,6 @@
 {
     "setup": {
-        "ready": "¡Listo y escuchando!"
+        "ready": "Listo y escuchando"
     },
     "command": {
         "general": {
@@ -10,11 +10,18 @@
                 "instance": "Ayuda we... me siento raro... dile a mi creador que tu mensaje me dió nauseas"
             }
         },
-        "kitten": {
+        "meow": {
             "name": "Gatitos",
             "description": "Muestra la imagen de un gatito aleatorio para esos días largos",
             "usage": "sin argumentos para obtener la imagen de un gatito",
             "success": "Creo que estás triste, toma un gatito random"
+        },
+        "catalog": {
+            "name": "Catálogo",
+            "description": "Muestra todas las respuestas guardadas",
+            "empty": "No tengo ninguna respuesta guardada, tal vez quieras primero guardar una, son gratis",
+            "remove_button": "Eliminar",
+            "deleted": "No es por ser chismoso pero %s acaba de eliminar la respuesta %s, aprecienla una última vez:"
         },
         "response": {
             "name": "Respuestas",
@@ -22,22 +29,13 @@
             "usage": "<alias> <texto> para asociar un texto/link a un alias, <alias> para obtener el texto/link asociado al alias, Sin argumentos para mostrar todas las respuestas guardadas",
             "set": "¡Felicidades! a partir de ahora ya no tendrás que escribir tanto, recordaré '%s' por tí",
             "missing": "Hmmm... no recuerdo esa palabra",
-            "list": "Supongo que quieres ver todas las respuestas que tengo memorizadas, aqui están",
-            "empty": "No tengo ninguna respuesta guardada, tal vez quieras primero guardar una, son gratis",
-            "remove": "Está bien olvidaré %s por tu paz mental"
-        },
-        "help": {
-            "name": "Ayuda",
-            "description": "Muestra todos los comandos disponibles",
-            "usage": "Sin argumentos para obtener una descripción de todos los comandos disponibles",
-            "start": "Esto es todo lo que sé hacer",
-            "keywords_start": "Lo puedes invocar de las siguientes formas",
-            "usage_start": "Usos"
+            "empty": "No tengo ninguna respuesta guardada, tal vez quieras primero guardar una, son gratis"
         },
         "encode": {
             "name": "Codificar",
             "description": "Codifica un mensaje convirtiendolo en un hash",
             "usage": "<texto a codificar>",
+            "ack": "Buen aporte bro, ahorita le hago commit en el canal",
             "empty": "¡No puedo codificar algo que no existe! porfa agrégale un argumento más al comando"
         },
         "decode": {
@@ -47,7 +45,8 @@
             "wrong": "Revisa qué te hace falta para acceder a los secretos del universo",
             "restricted": "¿Te conozco? ¡seguridaaaad! llévenselo...",
             "missing": "Sabes la clave, pero... ni yo sé donde está ese código, tal vez quieras verificarlo",
-            "success": "¡Ah perro! aquí esta el contenido de %s, soy fanático de las peliculas de 007 así que **este mensaje se autodestruirá en %d segundos**:"
+            "done": "Decodificación terminada, ahorita le hago commit en el canal",
+            "success": "Me dijo %s que les mostrara el contenido de %s, chequenlo rápido porque **este mensaje se autodestruirá en %d segundos**:"
         },
         "music": {
             "name": "Musica",
@@ -56,20 +55,26 @@
             "invalid_channel": "No quiero ir al canal de voz yo solo, ¡me da miedo! primero ve tú",
             "player_start": "Un momento, estoy buscando mis audífonos, estoy seguro que están por aquí",
             "player_start_error": "Whoops ¡Creo que se rompió mi micrófono! dile a mi creador que me compre uno",
-            "player_end": "Creo que ya se terminó el concierto, no firmo autógrafos, lo siento",
-            "player_end_error": "Creo que ya se terminó el concierto, no firmo autógrafos, lo siento"
+            "player_end": "Creo que ya se terminó el concierto, no firmo autógrafos, lo siento"
         },
         "top": {
             "name": "Top",
             "description": "Muestra que mensajes son los que más se repiten en el canal",
             "usage": "<cantidad> para obtener esa cantidad de comandos más usados (entre 1 y 20), Sin argumentos para obtener los 5 mensajes más usados",
+            "wait": "Esto podria tardar, regresa en unos segundos cuando vea que tanto hablan aquí",
             "start": "Esto es lo que más repitieron en los últimos %d mensajes",
             "item_times": "veces",
             "item_by": "última vez por",
             "end_empty": "Parece que no repiten ningún mensaje, debe estar muy interesante la conversación aquí",
             "list_error": "Me hacen falta unos lentes, no pude leer el historial de mensajes, intenta de nuevo más tarde",
             "text_long": "No quiero ponerles toda una biblia aquí así que los mensajes y resultados aparecerán truncados",
-            "wrong_limit": "Sólo puedo mostrar de 1 a 20 lugares, tómalo o déjalo"
+            "wrong_limit": "Sólo puedo mostrar de 1 a 20 lugares, tómalo o déjalo",
+            "middle": "Ya llevo leído  %d mensajes (puedo leer hasta %d mensajes), ahorita saco mi calculadora, espera un poco más..."
+        },
+        "d1": {
+            "name": "D1",
+            "description": "Invoca a todos para que se echen unas rondas",
+            "main": "Hey %s, dice %s que ya es hora de unas ronditas de %s bros"
         }
     }
 }

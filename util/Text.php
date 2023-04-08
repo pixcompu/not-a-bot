@@ -6,6 +6,16 @@ class Text
 {
 
 	/**
+	 * Return a mention formatted text
+	 * @param $text
+	 * @return string
+	 */
+	public static function mention($text)
+	{
+		return '@' . $text;
+	}
+
+	/**
 	 * Return a bold formatted text
 	 * @param $text
 	 * @return string

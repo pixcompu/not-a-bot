@@ -3,10 +3,10 @@
 namespace app\commands;
 
 use GuzzleHttp\Client;
+use util\Debug;
 
 class Meow extends Command
 {
-
 	/**
 	 * @var string
 	 */
@@ -22,9 +22,11 @@ class Meow extends Command
 		$promise = $client
 			->getAsync($this->randomCatsApiUrl)
 			->then(function($response){
+				Debug::log('received cat API response:');
 				$body = json_decode($response->getBody(), true);
-				$this->message->reply(
-					tt('command.kitten.success') . ' ' . $body[0]['url']
+				Debug::log($body);
+				$this->reply(
+					tt('command.meow.success') . ' ' . $body[0]['url']
 				);
 			});
 		$promise->wait();

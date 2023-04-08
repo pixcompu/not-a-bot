@@ -1,13 +1,26 @@
 <?php
 
-
 namespace app\commands;
+
+use Discord\Discord;
 use Discord\Parts\Channel\Channel;
-use Discord\Parts\Guild\Guild;
+use Discord\Parts\Interactions\Interaction;
 use Discord\Voice\VoiceClient;
+use util\Debug;
 
 class Music extends Command
 {
+	/**
+	 * @var ?VoiceClient
+	 */
+	private ?VoiceClient $voiceClient;
+
+	public function __construct(Discord $discord, Interaction $interaction)
+	{
+		parent::__construct($discord, $interaction);
+		// get the guild where the bot was called from the db
+		$this->voiceClient = $this->discord->getVoiceClient($this->interaction->guild->id);
+	}
 
 	/**
 	 * play a static music file if the user that triggered the command is in a voice channel
@@ -15,57 +28,50 @@ class Music extends Command
 	 */
 	public function execute(): void
 	{
-		// get the guild where the bot was called from the db
-		$guild = $this->message->channel->guild;
+		if(isset($this->voiceClient)){
+			$this->voiceClient->close();
+			$this->reply(tt('command.music.player_end'));
+		} else {
+			// to find the voice channel the user is connected
+			// we need to find all the voice states from the guils (voice states are combinations of voice channels and users)
+			$firstVoiceChannel = $this->interaction->guild->channels->get('type', Channel::TYPE_VOICE);
 
-		// the guild can have
-		$this->messageDiscord->guilds->fresh($guild)->then(function(Guild $guild){
-			// attempt to get the voice client that is playing currently in the voice channel
-			// a voice client should exists if the bot is currently connected to a voice channel
-			$voiceClient = $this->messageDiscord->getVoiceClient($this->message->channel->guild_id);
-
-			// as a test we will just finish the current voice client if we got requested the music command while the music is playing
-			if(isset($voiceClient)){
-				$voiceClient->close();
+			// if we found successfully the channel then we attempt to join the voice channel
+			if (isset($firstVoiceChannel)) {
+				$this->reply(tt('command.music.player_start'));
+				$this->discord->joinVoiceChannel($firstVoiceChannel, false, false)->then(function(VoiceClient $voiceClient){
+					Debug::log('joined voice channel');
+					Debug::log($voiceClient);
+					$this->voiceClient = $voiceClient;
+					$this->play();
+				}, function($error){
+					// error while playing the file
+					$this->reply(tt('command.music.player_start_error'));
+					Debug::log($error);
+				});
+				// the user that triggered the command isn't on a voice channel
 			} else {
-				// to find the voice channel the user is connected
-				// we need to find all the voice states from the guils (voice states are combinations of voice channels and users)
-				$firstVoiceChannel = $guild->channels->get('type', Channel::TYPE_VOICE);
-
-				// if we found successfully the channel then we attempt to join the voice channel
-				if (isset($firstVoiceChannel)) {
-					$this->messageDiscord->joinVoiceChannel($firstVoiceChannel)->then(function(VoiceClient $voiceClient){
-						$this->message->reply(tt('command.music.player_start'));
-						$this->play($voiceClient);
-					});
-					// the user that triggered the command isn't on a voice channel
-				} else {
-					$this->message->reply(tt('command.music.invalid_channel'));
-				}
+				$this->reply(tt('command.music.invalid_channel'));
 			}
-		});
+		}
 	}
 
 	/**
 	 * Play a static file on the voice channel
-	 * @param VoiceClient $voiceClient
 	 */
-	private function play(VoiceClient $voiceClient)
+	private function play()
 	{
+		Debug::log('attempting to play the file');
 		// play raw sound file
-		$voiceClient->playFile(__DIR__.'/../../test.mp3')
-			->then(function() use ($voiceClient){
+		$this->voiceClient->playFile('https://stream.rcast.net/69485.mp3')
+			->then(function() {
 				// this is executed when the music stopped playing
-				$voiceClient->close()->then(function(){
-					// successfully played the file and abandoned the voice channel
-					$this->message->reply(tt('command.music.player_end'));
-				}, function(){
-					// error while abandoning the voice channel
-					$this->message->reply(tt('command.music.player_end_error'));
-				});
+				$this->voiceClient->close();
+				// successfully played the file and abandoned the voice channel
+				$this->reply(tt('command.music.player_end'));
 			}, function(){
 				// error while playing the file
-				$this->message->reply(tt('command.music.player_start_error'));
+				$this->reply(tt('command.music.player_start_error'));
 			});
 	}
 }
