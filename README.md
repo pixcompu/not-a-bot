@@ -26,6 +26,17 @@ Psst... it's not a bot it's a cyborg
 
 Your can get your client id from the OAuth2 section of your application page in the discord developer portal.
 
+## Deployment
+
+### Direct PHP script execution
+
+1. If you have it already running find the process with `ps -fa`
+2. Kill the process with `kill <pid>`
+3. Execute the php script in the background writing the output to a log file with
+`nohup php /home/fadm/projects/not-a-bot/entrypoint.php &`
+4. If you want to check the log file execute `tail nohup.out -f`
+
+
 ## Usage
 
 Note: Once the container is up, if you make changes to the code, you have to interrupt the `entrypoint.php` process
