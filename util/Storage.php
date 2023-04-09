@@ -121,4 +121,17 @@ class Storage
 			->getReference('/guilds/' . $guildId . '/responses')
 			->getValue();
 	}
+
+	/**
+	 * Returns all the keys from the collection (without the data associated to them)
+	 * @param $guildId
+	 * @return string[]
+	 * @throws \Kreait\Firebase\Exception\DatabaseException
+	 */
+	public function getAllKeys($guildId)
+	{
+		return $this->database
+			->getReference('/guilds/' . $guildId . '/responses')
+			->getChildKeys();
+	}
 }

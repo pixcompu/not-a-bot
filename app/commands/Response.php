@@ -3,12 +3,12 @@
 namespace app\commands;
 
 use Discord\Discord;
-use Discord\Http\Exceptions\NoPermissionsException;
+use Discord\Parts\Interactions\Command\Choice;
 use Discord\Parts\Interactions\Interaction;
 use Kreait\Firebase\Exception\DatabaseException;
 use util\Storage;
 
-class Response extends Command
+class Response extends InteractiveCommand
 {
 	private Storage $storage;
 
@@ -69,6 +69,33 @@ class Response extends Command
 		} else {
 			// we didn't find a response for this keyword
 			$this->reply(tt('command.response.missing'), true);
+		}
+	}
+
+	/**
+	 * @param $text
+	 * @return void
+	 */
+	public function autocomplete($text): void
+	{
+		$keys = $this->storage->getAllKeys($this->interaction->guild_id);
+		$choices = [];
+		foreach ($keys as $key){
+			if(strpos(strtolower($key), strtolower($text)) !== false){
+				$choices[] = Choice::new($this->discord, $key, $key);
+			}
+		}
+		$this->interaction->autoCompleteResult($choices);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function interact(): void
+	{
+		$keyword = $this->interaction->data->options->get('name', 'key')->value ?? null;
+		if(isset($keyword)){
+			$this->autocomplete($keyword);
 		}
 	}
 }
