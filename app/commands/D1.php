@@ -39,10 +39,9 @@ class D1 extends Command
 
 		// define the custom gif keys, each one of these have the same probability of displaying
 		$secretGameKeys = [
-			'nagatoro',
-			'spy x family',
 			'lets go',
-			'waifu'
+			'waifu',
+			'doge'
 		];
 
 		// if we have at least one secret game keys
