@@ -74,7 +74,7 @@
         "d1": {
             "name": "D1",
             "description": "Invoca a todos para que se echen unas rondas",
-            "main": "Hey %s, dice %s que ya es hora de unas ronditas de %s bros"
+            "main": "Hey %s, dice %s que ya es hora de unas ronditas de %s"
         }
     }
 }
