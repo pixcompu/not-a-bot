@@ -14,7 +14,7 @@
             "name": "Gatitos",
             "description": "Muestra la imagen de un gatito aleatorio para esos días largos",
             "usage": "sin argumentos para obtener la imagen de un gatito",
-            "success": "Es muy peligroso estar ir solo en discord, toma un gatito random de la buena suerte"
+            "success": "Es muy peligroso estar ir solo en discord, toma un gatito de la buena suerte"
         },
         "catalog": {
             "name": "Catálogo",
