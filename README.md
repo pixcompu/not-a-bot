@@ -130,4 +130,4 @@ Congratulations! you did your first slash command!
 ### Catalog
 ![image](https://user-images.githubusercontent.com/42556506/230279430-9f60e7b8-0e9d-4d1c-8eca-2b89a702a81f.png)
 
-It also have some other interesting commands like **encode**, **decode**, **d1**
+It also have some other interesting commands like **encode** (converts a piece of text into a GIF), **decode** (converts the GIF url back into the text message), **d1** (invokes all the people on the server to play a game)
